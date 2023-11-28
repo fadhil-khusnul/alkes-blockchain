@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.6 <=0.8.23;
+// pragma solidity >=0.6.6 <=0.8.23;
+pragma solidity ^0.8.0;
+
 pragma experimental ABIEncoderV2;
 
 import "./Transactions.sol";
@@ -64,7 +66,18 @@ contract RawAlkes {
     function getRawAlkes()
         public
         view
-        returns (address, bytes32, bytes32, bytes32, bytes32, bytes32, bytes32, address, address, address)
+        returns (
+            address,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            address,
+            address,
+            address
+        )
     {
         return (
             productid,
@@ -82,6 +95,14 @@ contract RawAlkes {
 
     function getRawMaterialStatus() public view returns (uint) {
         return uint(status);
+    }
+
+    function getNamaAlkes() public view returns (bytes32) {
+        return namaAlkes;
+    }
+
+    function getKlasifikasiALkes() public view returns (bytes32) {
+        return klasifikasiAlkes;
     }
 
     function updateManufacturerAddress(address addr) public {

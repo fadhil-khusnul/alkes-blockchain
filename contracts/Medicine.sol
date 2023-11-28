@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.6 <=0.8.23;
+// pragma solidity >=0.6.6 <=0.8.23;
+
+pragma solidity ^0.8.0;
 
 import './Transactions.sol';
 

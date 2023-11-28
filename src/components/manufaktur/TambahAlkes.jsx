@@ -35,8 +35,10 @@ const TambahAlkes = ({ subtitle }) => {
 
     const dataBlockchain = async () => {
         try {
-            const abi = await supplyChain.methods.getAllPackages().call({ from: account })
+            const abi = await supplyChain.methods.getAllPackagesData().call({ from: account })
+            const abi2 = await supplyChain.methods.getAllPackages().call({ from: account })
             console.log(abi);
+            console.log(abi2);
 
             return abi
 
@@ -54,6 +56,8 @@ const TambahAlkes = ({ subtitle }) => {
 
                 console.log(res);
                 setAlkes(res);
+
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -62,9 +66,19 @@ const TambahAlkes = ({ subtitle }) => {
         fetchData();
     }, [account, web3, supplyChain])
 
+
+
     console.log(dataAlkes);
 
+    if (Object.keys(dataAlkes).length === 0) {
+        return null;
+    }
 
+    const getAllData = Object.keys(dataAlkes[0]).map((i) => ({
+        address: dataAlkes[0][i],
+        namAlkes: dataAlkes[1][i],
+        tipeAlkes: dataAlkes[2][i],
+    }));
 
 
     const handleInputChangeForm = (e) => {
@@ -93,7 +107,7 @@ const TambahAlkes = ({ subtitle }) => {
 
         console.log(nama_alkes, deskripsi_alkes, klasifikasi, tipe_alkes, kelas, kelas_resiko);
         e.preventDefault();
-        setViewInfo(false);
+        setLoadingSubmit(false);
 
         try {
             const n = web3.utils.padRight(web3.utils.fromAscii(nama_alkes), 64);
@@ -162,27 +176,34 @@ const TambahAlkes = ({ subtitle }) => {
 
     const DataAlkesComp = () => {
         return (
-
             <ul>
                 {
-                    dataAlkes?.map((alkes, index) => {
+                    getAllData?.map((alkes, index) => {
                         return (
+                            <li key={alkes.address}>
 
-                            <li key={index}>
                                 <div className="top-rated-product-item clearfix">
                                     <div className="top-rated-product-img">
                                         <a href="product-details.html"><img src="img/product/1.png" alt="#" /></a>
                                     </div>
                                     <div className="top-rated-product-info">
-                                        <div className="product-ratting">
+                                        <h2 className='product-title'><a href="product-details.html">{web3.utils.hexToUtf8(alkes.namAlkes).trim()} </a></h2>
+
+
+
+                                        <div className="product-price">
+                                            <span>{alkes.address}</span>
+                                        </div>
+                                        <div className="product-brief">
+
+
+                                            <h6>{web3.utils.hexToUtf8(alkes.tipeAlkes).trim()}</h6>
 
                                         </div>
-                                        <h6><a href="product-details.html">{alkes[0].namaAlkes}</a></h6>
-                                        <div className="product-price">
-                                            <span>{alkes}</span>
-                                        </div>
+
                                     </div>
                                 </div>
+
                             </li>
                         )
 

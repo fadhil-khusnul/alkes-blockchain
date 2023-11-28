@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.6 <=0.8.23;
+// pragma solidity >=0.6.6 <=0.8.23;
+pragma solidity ^0.8.0;
+
 pragma experimental ABIEncoderV2;
 
 import "./RawAlkes.sol";
@@ -87,7 +89,7 @@ contract SupplyChain {
         address packageAddr,
         bytes memory signature
     ) public {
-        emit buyEvent(buyer, seller, packageAddr, signature, now);
+        emit buyEvent(buyer, seller, packageAddr, signature, block.timestamp);
     }
 
     function respondToEntity(
@@ -96,7 +98,7 @@ contract SupplyChain {
         address packageAddr,
         bytes memory signature
     ) public {
-        emit respondEvent(buyer, seller, packageAddr, signature, now);
+        emit respondEvent(buyer, seller, packageAddr, signature, block.timestamp);
     }
 
     function sendPackageToEntity(
@@ -105,7 +107,7 @@ contract SupplyChain {
         address packageAddr,
         bytes memory signature
     ) public {
-        emit sendEvent(seller, buyer, packageAddr, signature, now);
+        emit sendEvent(seller, buyer, packageAddr, signature, block.timestamp);
     }
 
     /////////////// Users (Only Owner Executable) //////////////////////
@@ -171,7 +173,7 @@ contract SupplyChain {
     ) public returns (address) {
         RawAlkes rawMaterial = new RawAlkes(
             msg.sender,
-            address(bytes20(sha256(abi.encodePacked(msg.sender, now)))),
+            address(bytes20(sha256(abi.encodePacked(msg.sender, block.timestamp)))),
             // _description,
             // _quantity,
             // _transporterAddr,
@@ -202,243 +204,267 @@ contract SupplyChain {
         return ret;
     }
 
+      function getAllPackagesData()
+        public
+        view
+        returns (address[] memory, bytes32[] memory, bytes32[] memory)
+    {
+        uint len = supplierRawMaterials[msg.sender].length;
+        address[] memory retAddresses = new address[](len);
+        bytes32[] memory retDescriptions = new bytes32[](len);
+        bytes32[] memory retQuantities = new bytes32[](len);
+
+        for (uint i = 0; i < len; i++) {
+            address rawMaterialAddr = supplierRawMaterials[msg.sender][i];
+            RawAlkes rawMaterialNew = RawAlkes(rawMaterialAddr);
+
+            // console.log(rawMaterialNew);
+            retAddresses[i] = rawMaterialAddr;
+            retDescriptions[i] = rawMaterialNew.getNamaAlkes();
+            retQuantities[i] = rawMaterialNew.getKlasifikasiALkes();
+        }
+
+        return (retAddresses, retDescriptions, retQuantities);
+    }
+    
+
     ///////////////  Transporter ///////////////
 
-    function transporterHandlePackage(
-        address _addr,
-        uint transportertype,
-        address cid
-    ) public {
-        require(
-            userInfo[msg.sender].role == roles.transporter,
-            "Only Transporter can call this function"
-        );
-        require(transportertype > 0, "Transporter Type is incorrect");
+    // function transporterHandlePackage(
+    //     address _addr,
+    //     uint transportertype,
+    //     address cid
+    // ) public {
+    //     require(
+    //         userInfo[msg.sender].role == roles.transporter,
+    //         "Only Transporter can call this function"
+    //     );
+    //     require(transportertype > 0, "Transporter Type is incorrect");
 
-        if (transportertype == 1) {
-            /// Supplier -> Manufacturer
-            RawAlkes(_addr).pickPackage(msg.sender);
-        } else if (transportertype == 2) {
-            /// Manufacturer -> Wholesaler
-            Medicine(_addr).pickMedicine(msg.sender);
-        } else if (transportertype == 3) {
-            // Wholesaler to Distributor
-            MedicineW_D(cid).pickWD(_addr, msg.sender);
-        } else if (transportertype == 4) {
-            // Distrubutor to Customer
-            MedicineD_C(cid).pickDC(_addr, msg.sender);
-        }
-    }
+    //     if (transportertype == 1) {
+    //         /// Supplier -> Manufacturer
+    //         RawAlkes(_addr).pickPackage(msg.sender);
+    //     } else if (transportertype == 2) {
+    //         /// Manufacturer -> Wholesaler
+    //         Medicine(_addr).pickMedicine(msg.sender);
+    //     } else if (transportertype == 3) {
+    //         // Wholesaler to Distributor
+    //         MedicineW_D(cid).pickWD(_addr, msg.sender);
+    //     } else if (transportertype == 4) {
+    //         // Distrubutor to Customer
+    //         MedicineD_C(cid).pickDC(_addr, msg.sender);
+    //     }
+    // }
 
-    ///////////////  Manufacturer ///////////////
+    // ///////////////  Manufacturer ///////////////
 
-    mapping(address => address[]) public manufacturerRawMaterials;
-    mapping(address => address[]) public manufacturerMedicines;
+    // mapping(address => address[]) public manufacturerRawMaterials;
+    // mapping(address => address[]) public manufacturerMedicines;
 
-    function manufacturerReceivedPackage(
-        address _addr,
-        address _manufacturerAddress,
-        address _sellerAddr,
-        bytes memory signature
-    ) public {
-        RawAlkes(_addr).receivedPackage(_manufacturerAddress);
-        manufacturerRawMaterials[_manufacturerAddress].push(_addr);
-        emit receivedEvent(msg.sender, _sellerAddr, _addr, signature, now);
-    }
+    // function manufacturerReceivedPackage(
+    //     address _addr,
+    //     address _manufacturerAddress,
+    //     address _sellerAddr,
+    //     bytes memory signature
+    // ) public {
+    //     RawAlkes(_addr).receivedPackage(_manufacturerAddress);
+    //     manufacturerRawMaterials[_manufacturerAddress].push(_addr);
+    //     emit receivedEvent(msg.sender, _sellerAddr, _addr, signature, block.timestamp);
+    // }
 
-    function getAllRawMaterials() public view returns (address[] memory) {
-        uint len = manufacturerRawMaterials[msg.sender].length;
-        address[] memory ret = new address[](len);
-        for (uint i = 0; i < len; i++) {
-            ret[i] = manufacturerRawMaterials[msg.sender][i];
-        }
-        return ret;
-    }
+    // function getAllRawMaterials() public view returns (address[] memory) {
+    //     uint len = manufacturerRawMaterials[msg.sender].length;
+    //     address[] memory ret = new address[](len);
+    //     for (uint i = 0; i < len; i++) {
+    //         ret[i] = manufacturerRawMaterials[msg.sender][i];
+    //     }
+    //     return ret;
+    // }
 
-    function manufacturerCreatesMedicine(
-        address _manufacturerAddr,
-        bytes32 _description,
-        address[] memory _rawAddr,
-        uint _quantity,
-        address[] memory _transporterAddr
-    ) public {
-        Medicine _medicine = new Medicine(
-            _manufacturerAddr,
-            _description,
-            _rawAddr,
-            _quantity,
-            _transporterAddr
-        );
+    // function manufacturerCreatesMedicine(
+    //     address _manufacturerAddr,
+    //     bytes32 _description,
+    //     address[] memory _rawAddr,
+    //     uint _quantity,
+    //     address[] memory _transporterAddr
+    // ) public {
+    //     Medicine _medicine = new Medicine(
+    //         _manufacturerAddr,
+    //         _description,
+    //         _rawAddr,
+    //         _quantity,
+    //         _transporterAddr
+    //     );
 
-        manufacturerMedicines[_manufacturerAddr].push(address(_medicine));
-    }
+    //     manufacturerMedicines[_manufacturerAddr].push(address(_medicine));
+    // }
 
-    function getAllCreatedMedicines() public view returns (address[] memory) {
-        uint len = manufacturerMedicines[msg.sender].length;
-        address[] memory ret = new address[](len);
-        for (uint i = 0; i < len; i++) {
-            ret[i] = manufacturerMedicines[msg.sender][i];
-        }
-        return ret;
-    }
+    // function getAllCreatedMedicines() public view returns (address[] memory) {
+    //     uint len = manufacturerMedicines[msg.sender].length;
+    //     address[] memory ret = new address[](len);
+    //     for (uint i = 0; i < len; i++) {
+    //         ret[i] = manufacturerMedicines[msg.sender][i];
+    //     }
+    //     return ret;
+    // }
 
-    ///////////////  Wholesaler  ///////////////
+    // ///////////////  Wholesaler  ///////////////
 
-    mapping(address => address[]) public MedicinesAtWholesaler;
-    mapping(address => address[]) public MedicineWtoD;
-    mapping(address => address) public MedicineWtoDTxContract;
+    // mapping(address => address[]) public MedicinesAtWholesaler;
+    // mapping(address => address[]) public MedicineWtoD;
+    // mapping(address => address) public MedicineWtoDTxContract;
 
-    function wholesalerReceivedMedicine(
-        address _address,
-        address _sellerAddr,
-        bytes memory signature
-    ) public {
-        require(
-            userInfo[msg.sender].role == roles.wholesaler,
-            "Only Wholesaler can call this function"
-        );
+    // function wholesalerReceivedMedicine(
+    //     address _address,
+    //     address _sellerAddr,
+    //     bytes memory signature
+    // ) public {
+    //     require(
+    //         userInfo[msg.sender].role == roles.wholesaler,
+    //         "Only Wholesaler can call this function"
+    //     );
 
-        uint rtype = Medicine(_address).receivedMedicine(msg.sender);
-        MedicinesAtWholesaler[msg.sender].push(_address);
-        emit receivedEvent(msg.sender, _sellerAddr, _address, signature, now);
-    }
+    //     uint rtype = Medicine(_address).receivedMedicine(msg.sender);
+    //     MedicinesAtWholesaler[msg.sender].push(_address);
+    //     emit receivedEvent(msg.sender, _sellerAddr, _address, signature, block.timestamp);
+    // }
 
-    function transferMedicineWtoD(
-        address _address,
-        address transporter,
-        address receiver
-    ) public {
-        MedicineW_D wd = new MedicineW_D(
-            _address,
-            msg.sender,
-            transporter,
-            receiver
-        );
-        MedicineWtoD[msg.sender].push(address(wd));
-        MedicineWtoDTxContract[_address] = address(wd);
-    }
+    // function transferMedicineWtoD(
+    //     address _address,
+    //     address transporter,
+    //     address receiver
+    // ) public {
+    //     MedicineW_D wd = new MedicineW_D(
+    //         _address,
+    //         msg.sender,
+    //         transporter,
+    //         receiver
+    //     );
+    //     MedicineWtoD[msg.sender].push(address(wd));
+    //     MedicineWtoDTxContract[_address] = address(wd);
+    // }
 
-    function getBatchIdByIndexWD(
-        uint index
-    ) public view returns (address packageID) {
-        require(
-            userInfo[msg.sender].role == roles.wholesaler,
-            "Only Wholesaler Can call this function."
-        );
-        return MedicineWtoD[msg.sender][index];
-    }
+    // function getBatchIdByIndexWD(
+    //     uint index
+    // ) public view returns (address packageID) {
+    //     require(
+    //         userInfo[msg.sender].role == roles.wholesaler,
+    //         "Only Wholesaler Can call this function."
+    //     );
+    //     return MedicineWtoD[msg.sender][index];
+    // }
 
-    function getSubContractWD(
-        address _address
-    ) public view returns (address SubContractWD) {
-        return MedicineWtoDTxContract[_address];
-    }
+    // function getSubContractWD(
+    //     address _address
+    // ) public view returns (address SubContractWD) {
+    //     return MedicineWtoDTxContract[_address];
+    // }
 
-    function getAllMedicinesAtWholesaler()
-        public
-        view
-        returns (address[] memory)
-    {
-        uint len = MedicinesAtWholesaler[msg.sender].length;
-        address[] memory ret = new address[](len);
-        for (uint i = 0; i < len; i++) {
-            ret[i] = MedicinesAtWholesaler[msg.sender][i];
-        }
-        return ret;
-    }
+    // function getAllMedicinesAtWholesaler()
+    //     public
+    //     view
+    //     returns (address[] memory)
+    // {
+    //     uint len = MedicinesAtWholesaler[msg.sender].length;
+    //     address[] memory ret = new address[](len);
+    //     for (uint i = 0; i < len; i++) {
+    //         ret[i] = MedicinesAtWholesaler[msg.sender][i];
+    //     }
+    //     return ret;
+    // }
 
-    //     ///////////////  Distributor  ///////////////
+    // //     ///////////////  Distributor  ///////////////
 
-    mapping(address => address[]) public MedicinesAtDistributor;
-    mapping(address => address[]) public MedicineDtoC;
-    mapping(address => address) public MedicineDtoCTxContract;
+    // mapping(address => address[]) public MedicinesAtDistributor;
+    // mapping(address => address[]) public MedicineDtoC;
+    // mapping(address => address) public MedicineDtoCTxContract;
 
-    function distributorReceivedMedicine(
-        address _address,
-        address cid,
-        address _sellerAddr,
-        bytes memory signature
-    ) public {
-        require(
-            userInfo[msg.sender].role == roles.distributor &&
-                msg.sender == Medicine(_address).getWDC()[1],
-            "Only Distributor or current owner of package can call this function"
-        );
+    // function distributorReceivedMedicine(
+    //     address _address,
+    //     address cid,
+    //     address _sellerAddr,
+    //     bytes memory signature
+    // ) public {
+    //     require(
+    //         userInfo[msg.sender].role == roles.distributor &&
+    //             msg.sender == Medicine(_address).getWDC()[1],
+    //         "Only Distributor or current owner of package can call this function"
+    //     );
 
-        uint rtype = Medicine(_address).receivedMedicine(msg.sender);
-        if (rtype == 2) {
-            MedicinesAtDistributor[msg.sender].push(_address);
-            if (Medicine(_address).getWDC()[0] != address(0)) {
-                MedicineW_D(cid).receiveWD(_address, msg.sender);
-            }
-        }
-        emit receivedEvent(msg.sender, _sellerAddr, _address, signature, now);
-    }
+    //     uint rtype = Medicine(_address).receivedMedicine(msg.sender);
+    //     if (rtype == 2) {
+    //         MedicinesAtDistributor[msg.sender].push(_address);
+    //         if (Medicine(_address).getWDC()[0] != address(0)) {
+    //             MedicineW_D(cid).receiveWD(_address, msg.sender);
+    //         }
+    //     }
+    //     emit receivedEvent(msg.sender, _sellerAddr, _address, signature, block.timestamp);
+    // }
 
-    function distributorTransferMedicinetoCustomer(
-        address _address,
-        address transporter,
-        address receiver
-    ) public {
-        require(
-            userInfo[msg.sender].role == roles.distributor &&
-                msg.sender == Medicine(_address).getWDC()[1],
-            "Only Distributor or current owner of package can call this function"
-        );
-        MedicineD_C dp = new MedicineD_C(
-            _address,
-            msg.sender,
-            transporter,
-            receiver
-        );
-        MedicineDtoC[msg.sender].push(address(dp));
-        MedicineDtoCTxContract[_address] = address(dp);
-    }
+    // function distributorTransferMedicinetoCustomer(
+    //     address _address,
+    //     address transporter,
+    //     address receiver
+    // ) public {
+    //     require(
+    //         userInfo[msg.sender].role == roles.distributor &&
+    //             msg.sender == Medicine(_address).getWDC()[1],
+    //         "Only Distributor or current owner of package can call this function"
+    //     );
+    //     MedicineD_C dp = new MedicineD_C(
+    //         _address,
+    //         msg.sender,
+    //         transporter,
+    //         receiver
+    //     );
+    //     MedicineDtoC[msg.sender].push(address(dp));
+    //     MedicineDtoCTxContract[_address] = address(dp);
+    // }
 
-    function getBatchesCountDC() public view returns (uint count) {
-        require(
-            userInfo[msg.sender].role == roles.distributor,
-            "Only Distributor Can call this function."
-        );
-        return MedicineDtoC[msg.sender].length;
-    }
+    // function getBatchesCountDC() public view returns (uint count) {
+    //     require(
+    //         userInfo[msg.sender].role == roles.distributor,
+    //         "Only Distributor Can call this function."
+    //     );
+    //     return MedicineDtoC[msg.sender].length;
+    // }
 
-    function getBatchIdByIndexDC(
-        uint index
-    ) public view returns (address packageID) {
-        require(
-            userInfo[msg.sender].role == roles.distributor,
-            "Only Distributor Can call this function."
-        );
-        return MedicineDtoC[msg.sender][index];
-    }
+    // function getBatchIdByIndexDC(
+    //     uint index
+    // ) public view returns (address packageID) {
+    //     require(
+    //         userInfo[msg.sender].role == roles.distributor,
+    //         "Only Distributor Can call this function."
+    //     );
+    //     return MedicineDtoC[msg.sender][index];
+    // }
 
-    function getSubContractDC(
-        address _address
-    ) public view returns (address SubContractDP) {
-        return MedicineDtoCTxContract[_address];
-    }
+    // function getSubContractDC(
+    //     address _address
+    // ) public view returns (address SubContractDP) {
+    //     return MedicineDtoCTxContract[_address];
+    // }
 
-    function getAllMedicinesAtDistributor()
-        public
-        view
-        returns (address[] memory)
-    {
-        uint len = MedicinesAtDistributor[msg.sender].length;
-        address[] memory ret = new address[](len);
-        for (uint i = 0; i < len; i++) {
-            ret[i] = MedicinesAtDistributor[msg.sender][i];
-        }
-        return ret;
-    }
+    // function getAllMedicinesAtDistributor()
+    //     public
+    //     view
+    //     returns (address[] memory)
+    // {
+    //     uint len = MedicinesAtDistributor[msg.sender].length;
+    //     address[] memory ret = new address[](len);
+    //     for (uint i = 0; i < len; i++) {
+    //         ret[i] = MedicinesAtDistributor[msg.sender][i];
+    //     }
+    //     return ret;
+    // }
 
-    function verify(
-        address p,
-        bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public pure returns (bool) {
-        return ecrecover(hash, v, r, s) == p;
-    }
+    // function verify(
+    //     address p,
+    //     bytes32 hash,
+    //     uint8 v,
+    //     bytes32 r,
+    //     bytes32 s
+    // ) public pure returns (bool) {
+    //     return ecrecover(hash, v, r, s) == p;
+    // }
 }
