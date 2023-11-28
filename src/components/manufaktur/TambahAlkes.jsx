@@ -10,150 +10,131 @@ import Select from '@mui/material/Select';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 
+import Transactions from '../../build/Transactions.json';
+import RawAlkes from '../../build/RawAlkes.json';
+
 
 
 const TambahAlkes = ({ subtitle }) => {
     const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain();
 
 
-    console.log(account, supplyChain);
-    const [name, setName] = useState("");
-    const [role, setRole] = useState("");
-    const [email, setEmail] = useState("");
-    const [noTelp, setNoTelp] = useState("");
-    const [address, setAddress] = useState("");
+
+
+    console.log(loading, account, supplyChain);
+    const [nama_alkes, setnama_alkes] = useState("");
+    const [deskripsi_alkes, setdeskripsi_alkes] = useState("");
+    const [klasifikasi, setklasifikasi] = useState("");
+    const [tipe_alkes, settipe_alkes] = useState("");
+    const [kelas, setkelas] = useState("");
+    const [kelas_resiko, setkelas_resiko] = useState("");
     const [loadingSubmit, setLoadingSubmit] = useState(loading);
-    const [loadingView, setLoadingView] = useState(loading);
-    const [viewAddress, setViewAddress] = useState("");
-    const [viewName, setViewName] = useState("");
-    const [viewEmail, setViewEmail] = useState("");
-    const [viewNoTelp, setViewNoTelp] = useState("");
-    const [viewRole, setViewRole] = useState("");
-    const [viewUserLocx, setViewUserLocx] = useState("");
-    const [viewUserLocy, setViewUserLocy] = useState("");
-    const [viewInfo, setViewInfo] = useState(false);
+
+
+    const [dataAlkes, setAlkes] = useState([])
+
+    const dataBlockchain = async () => {
+        try {
+            const abi = await supplyChain.methods.getAllPackages().call({ from: account })
+            console.log(abi);
+
+            return abi
+
+        } catch (error) {
+            console.error('Error:', error);
+            throw error
+        }
+    }
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await dataBlockchain();
+
+                console.log(res);
+                setAlkes(res);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, [account, web3, supplyChain])
+
+    console.log(dataAlkes);
 
 
 
 
     const handleInputChangeForm = (e) => {
-        if (e.target.id === 'name') {
-            setName(e.target.value);
-        } else if (e.target.id === 'email') {
-            setEmail(e.target.value);
-        } else if (e.target.id === 'no_telp') {
-            setNoTelp(e.target.value);
-        } else if (e.target.id === 'role') {
-            setRole(e.target.value);
-        } else if (e.target.id === 'address') {
-            setAddress(e.target.value);
+        if (e.target.id === 'nama_alkes') {
+            setnama_alkes(e.target.value);
+        } else if (e.target.id === 'deskripsi_alkes') {
+            setdeskripsi_alkes(e.target.value);
+        } else if (e.target.id === 'tipe_alkes') {
+            settipe_alkes(e.target.value);
         }
 
     }
+    const handleSelectChangeForm = (e) => {
+        console.log(e.target);
+        if (e.target.name === 'klasifikasi') {
+            setklasifikasi(e.target.value);
+        } else if (e.target.name === 'kelas') {
+            setkelas(e.target.value);
+        } else if (e.target.name === 'kelas_resiko') {
+            setkelas_resiko(e.target.value);
+        }
+
+    }
+
     const handleSubmit = async (e) => {
+
+        console.log(nama_alkes, deskripsi_alkes, klasifikasi, tipe_alkes, kelas, kelas_resiko);
         e.preventDefault();
-        console.log(name, email, noTelp, role, address);
-        setLoadingSubmit(true);
+        setViewInfo(false);
 
         try {
+            const n = web3.utils.padRight(web3.utils.fromAscii(nama_alkes), 64);
+            const d = web3.utils.padRight(web3.utils.fromAscii(deskripsi_alkes), 64);
+            const c = web3.utils.padRight(web3.utils.fromAscii(klasifikasi), 64);
+            const t = web3.utils.padRight(web3.utils.fromAscii(tipe_alkes), 64);
+            const k = web3.utils.padRight(web3.utils.fromAscii(kelas), 64);
+            const kr = web3.utils.padRight(web3.utils.fromAscii(kelas_resiko), 64);
 
-            const n = web3.utils.padRight(web3.utils.fromAscii(name), 64);
-            const e = web3.utils.padRight(web3.utils.fromAscii(email), 64);
-            const no = web3.utils.padRight(web3.utils.fromAscii(noTelp), 64);
-            // const loc = [String(locationx), String(locationy)];
+            console.log(kr);
             await supplyChain.methods
-                .registerUser(n, e, no, role, address)
+                .createAlkesManufaktur(n, d, c, t, k, kr, account)
                 .send({ from: account })
-                .once('receipt', (receipt) => {
+                .once('receipt', async (receipt) => {
+                    setLoadingSubmit(true);
+
                     console.log(receipt);
-                    setLoadingSubmit(false);
+                    var rawMaterialAddresses = await supplyChain.methods.getAllPackages().call({ from: account });
+                    let rawMaterialAddress = rawMaterialAddresses[rawMaterialAddresses.length - 1];
+                    console.log(rawMaterialAddress);
+                    const rawMaterial = new web3.eth.Contract(RawAlkes.abi, rawMaterialAddress);
+                    const data = await rawMaterial.methods.getRawAlkes().call({ from: account });
+                    console.log(data[9]);
+                    const txnContractAddress = data[9];
+                    const txnHash = receipt.transactionHash;
+                    const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
+                    await transactions.methods.createTxnEntry(txnHash, account, rawMaterialAddress, txnHash, '10', '10').send({ from: account });
+
+                    window.location.reload();
                 });
+
+
         } catch (error) {
-            console.error('Error submitting:', error);
+            console.error('Error:', error);
             setLoadingSubmit(false);
         }
-    }
-    const getEventData = () => {
-
-        supplyChain.events
-            .UserRegister({ fromBlock: 0, toBlock: 'latest' })
-            .on('data', (event) => {
-                console.log(event);
-            });
     };
     if (loading) {
         return <Loader></Loader>;
     }
-    getEventData();
 
-
-
-    const handleInputView = (e) => {
-        console.log(e.target.value);
-        setViewAddress(e.target.value);
-    }
-
-
-
-    const handleSubmitView = async (e) => {
-        try {
-            e.preventDefault();
-
-            setLoadingView(true);
-
-            const info = await supplyChain.methods.getUserInfo(viewAddress).call();
-
-            console.log("infooo", info);
-
-            setViewRole(info.role);
-
-            console.log(info.role, info.email);
-
-            if (web3.utils.isHexStrict(info.name)) {
-                // Convert HEX to UTF-8
-                const utf8Name = web3.utils.hexToUtf8(info.name).trim();
-                const utf8Email = web3.utils.hexToUtf8(info.email).trim();
-                const utf8Notelp = web3.utils.hexToUtf8(info.noTelp).trim();
-
-
-                setViewName(utf8Name)
-                setViewEmail(utf8Email)
-                setViewNoTelp(utf8Notelp)
-            }
-
-            setViewInfo(true);
-
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-
-        }
-
-    }
-
-    const DetailUser = () => {
-        return (
-            <div className="ltn__team-details-member-info-details">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <div className="ltn__team-details-member-about">
-                            <ul>
-                                <li><strong>Blockchain : </strong> {viewAddress}</li>
-                                <li><strong>Nama User : </strong> {viewName}</li>
-                                <li><strong>Email : </strong> {viewEmail}</li>
-                                <li><strong>No Telp : </strong> {viewNoTelp}</li>
-                                <li><strong>Role User : </strong> {viewRole}</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
-                <hr />
-            </div>
-        )
-
-
-
-    }
 
     const stylesSelect = {
         color: "#5C727D",
@@ -179,7 +160,45 @@ const TambahAlkes = ({ subtitle }) => {
 
     }
 
+    const DataAlkesComp = () => {
+        return (
 
+            <ul>
+                {
+                    dataAlkes?.map((alkes, index) => {
+                        return (
+
+                            <li key={index}>
+                                <div className="top-rated-product-item clearfix">
+                                    <div className="top-rated-product-img">
+                                        <a href="product-details.html"><img src="img/product/1.png" alt="#" /></a>
+                                    </div>
+                                    <div className="top-rated-product-info">
+                                        <div className="product-ratting">
+
+                                        </div>
+                                        <h6><a href="product-details.html">{alkes[0].namaAlkes}</a></h6>
+                                        <div className="product-price">
+                                            <span>{alkes}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        )
+
+
+                    })
+                }
+            </ul>
+
+
+
+        )
+
+    }
+
+
+    // fetchData();
     return (
         <>
             <div className="ltn__contact-message-area ltn__contact-address-area mt-50 mb-120">
@@ -197,7 +216,7 @@ const TambahAlkes = ({ subtitle }) => {
                                         </div>
                                         <div className="col-md-12">
                                             <div className="input-item input-item-textarea ltn__custom-icon">
-                                                <textarea name="deskripsi_alkes" placeholder="Deskripsi Alkes"></textarea>
+                                                <textarea id="deskripsi_alkes" name="deskripsi_alkes" placeholder="Deskripsi Alkes" onChange={handleInputChangeForm}></textarea>
                                             </div>
                                         </div>
                                         <div className="col-md-12">
@@ -210,15 +229,16 @@ const TambahAlkes = ({ subtitle }) => {
                                                     >
                                                         <InputLabel>Klasifikasi Alkes</InputLabel>
                                                         <Select
-                                                            id=""
+                                                            id="klasifikasi"
+                                                            name='klasifikasi'
                                                             label="Klasifikasi"
-                                                            onChange={handleInputChangeForm}
+                                                            onChange={handleSelectChangeForm}
                                                         >
-                                                            <MenuItem value="elektromedik_radiasi">Elektromedik Radiasi</MenuItem>
-                                                            <MenuItem value="elktromedik_non_radiasi">Elektromedik Non Radiasi</MenuItem>
-                                                            <MenuItem value="non_elktromedik_steril">Non Elektromedik Steril</MenuItem>
-                                                            <MenuItem value="non_elktromedik_non_steril">Non Elektromedik Non Steril</MenuItem>
-                                                            <MenuItem value="diagnostic_invitro">Diagnostic Invitro</MenuItem>
+                                                            <MenuItem value={"elektromedik_radiasi"}>Elektromedik Radiasi</MenuItem>
+                                                            <MenuItem value={"elktromedik_non_radiasi"}>Elektromedik Non Radiasi</MenuItem>
+                                                            <MenuItem value={"non_elktromedik_steril"}>Non Elektromedik Steril</MenuItem>
+                                                            <MenuItem value={"non_elktromedik_non_steril"}>Non Elektromedik Non Steril</MenuItem>
+                                                            <MenuItem value={"diagnostic_invitro"}>Diagnostic Invitro</MenuItem>
                                                         </Select>
                                                     </FormControl>
                                                 </Box>
@@ -242,8 +262,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                         <InputLabel>Kelas</InputLabel>
                                                         <Select
                                                             id="kelas"
+                                                            name="kelas"
                                                             label="Kelas"
-                                                            onChange={handleInputChangeForm}
+                                                            onChange={handleSelectChangeForm}
                                                         >
                                                             <MenuItem value={1}>Kelas 1</MenuItem>
                                                             <MenuItem value={2}>Kelas 2</MenuItem>
@@ -264,8 +285,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                         <InputLabel>Kelas Resiko</InputLabel>
                                                         <Select
                                                             id="kelas_resiko"
+                                                            name="kelas_resiko"
                                                             label="Kelas Resiko"
-                                                            onChange={handleInputChangeForm}
+                                                            onChange={handleSelectChangeForm}
                                                         >
                                                             <MenuItem value={"A"}>Kelas A</MenuItem>
                                                             <MenuItem value={"B"}>Kelas B</MenuItem>
@@ -300,34 +322,14 @@ const TambahAlkes = ({ subtitle }) => {
                             </div>
                         </div>
                         <div className="col-lg-6">
-                            <div className="ltn__form-box contact-form-box box-shadow white-bg">
-                                <h4 className="title-2">View User</h4>
-                                <form onSubmit={handleSubmitView} noValidate autoComplete='off'>
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <div className="input-item input-item-subject ltn__custom-icon">
-                                                <input type="text" id='address_view' name="address_view" onChange={handleInputView} placeholder="Masukkan Blockchai Address User" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {
-                                        viewInfo
-                                            ?
-                                            <DetailUser />
-                                            :
-                                            null
-                                    }
+                            <div className="ltn__form-box contact-form-box box-shadow white-bg ltn__top-rated-product-widget">
+                                <h4 className="title-2">List Alkes</h4>
+                                {
+                                    loadingSubmit
+                                        ? <DataAlkesComp />
+                                        : <Loader />
+                                }
 
-                                    <div className="btn-wrapper text-end">
-                                        <button className="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">View</button>
-                                    </div>
-
-
-
-
-
-
-                                </form>
                             </div>
                         </div>
                     </div>

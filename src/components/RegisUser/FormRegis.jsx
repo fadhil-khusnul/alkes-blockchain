@@ -35,7 +35,7 @@ const FormRegis = () => {
         } else if (e.target.id === 'email') {
             setEmail(e.target.value);
         } else if (e.target.id === 'no_telp') {
-            setNoTelp(e.target.id);
+            setNoTelp(e.target.value);
         } else if (e.target.id === 'address') {
             setAddress(e.target.value);
         }
@@ -43,8 +43,8 @@ const FormRegis = () => {
     }
 
     const handleSelect = (e) => {
-        console.log(e);
-        setRole(e);
+        console.log(e.target);
+        setRole(e.target.value);
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -195,7 +195,7 @@ const FormRegis = () => {
                                         </div>
                                         <div className="col-md-12">
                                             <div className="input-item input-item-phone ltn__custom-icon">
-                                                <input type="text" id='no_telp' name="no_telp" onChange={handleInputChangeForm} placeholder="Masukkan Email User" />
+                                                <input type="text" id='no_telp' name="no_telp" onChange={handleInputChangeForm} placeholder="Masukkan No Telp User" />
                                             </div>
                                         </div>
                                         {/* <div className="col-md-12">
@@ -220,9 +220,9 @@ const FormRegis = () => {
                                                     >
                                                         <InputLabel id="label-select-role">Role User</InputLabel>
                                                         <Select
-                                                            labelId="abel-select-role"
-                                                            id="role_user"
-                                                            name="role_user"
+                                                            labelId="label-select-role"
+                                                            id="role"
+                                                            name="role"
                                                             onChange={handleSelect}
                                                         >
                                                             <MenuItem value={1}>Manufaktur</MenuItem>
