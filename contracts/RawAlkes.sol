@@ -7,7 +7,7 @@ pragma experimental ABIEncoderV2;
 import "./Transactions.sol";
 
 contract RawAlkes {
-    address Owner;
+    address public Owner;
 
     enum packageStatus {
         atCreator,
@@ -93,7 +93,7 @@ contract RawAlkes {
         );
     }
 
-    function getRawMaterialStatus() public view returns (uint) {
+    function getRawAlkesStatus() public view returns (uint) {
         return uint(status);
     }
 

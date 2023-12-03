@@ -5,6 +5,8 @@ import NavBar from './NavBar'
 import TopMenu from './TopMenu'
 import Link from 'next/link'
 
+import Logo from '@/assets/img/logo.png'
+
 export default function Header({title}) {
     return (
         <header className="ltn__header-area ltn__header-5 ltn__header-logo-and-mobile-menu-in-mobile--- ltn__header-logo-and-mobile-menu--- ltn__header-transparent py-5">
@@ -15,7 +17,10 @@ export default function Header({title}) {
                         <div className="col">
                             <div className="site-logo-wrap mt-10 mb-10">
                                 <div className="site-logo">
-                                    <a href={"/"} as={"/"} passHref><img width="70" src={"./img/logo.png"} alt="Logo" /></a>
+                                    <a href={"/"}>
+                                        <Image width={70} height={70} src={Logo.src} alt="Logo" />
+                                        
+                                        </a>
                                     <h2 className='page-title text-secondary align-content-center mb-0 '>
                                         {title}
                                     </h2>

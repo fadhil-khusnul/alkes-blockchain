@@ -56,7 +56,6 @@ contract SupplyChain {
         address buyer,
         address indexed seller,
         address packageAddr,
-        bytes signature,
         uint indexed timestamp
     );
     event respondEvent(
@@ -86,10 +85,9 @@ contract SupplyChain {
     function requestProduct(
         address buyer,
         address seller,
-        address packageAddr,
-        bytes memory signature
+        address packageAddr
     ) public {
-        emit buyEvent(buyer, seller, packageAddr, signature, block.timestamp);
+        emit buyEvent(buyer, seller, packageAddr, block.timestamp);
     }
 
     function respondToEntity(
@@ -116,7 +114,6 @@ contract SupplyChain {
         bytes32 name;
         bytes32 email;
         bytes32 noTelp;
-        // string[] userLoc;
         roles role;
         address userAddr;
     }
@@ -153,6 +150,7 @@ contract SupplyChain {
     ) public view returns (userData memory) {
         return userInfo[_address];
     }
+    
 
     /////////////// Supplier //////////////////////
 

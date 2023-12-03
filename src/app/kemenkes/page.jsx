@@ -18,15 +18,15 @@ const Page = () => {
 
   return (
     <div>
-      <Header title={"User"} />
-      <MobileMenu title={"User"} />
+      <Header title={"Kemenkes"} />
+      <MobileMenu title={"Kemenkes"} />
 
       <OverlayMenu />
 
       <Breadcumb />
 
-      <FormRegis />
 
+      <h1>HALAMAN KEMENKES</h1>
     </div>
   )
 }

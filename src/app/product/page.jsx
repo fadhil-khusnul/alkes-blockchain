@@ -29,7 +29,7 @@ export default function Product() {
       <HeaderProduct />
       <MobileProductHeader />
       <CartMenu />
-      <MobileMenu />
+      <MobileMenu title={"Product"} />
 
       <div className="ltn__utilize-overlay"></div>
 

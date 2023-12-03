@@ -10,7 +10,6 @@ import React, { useEffect, useState } from 'react'
 import Web3 from 'web3';
 import SupplyChain from '../../build/SupplyChain.json';
 import useBlockchain from '@/utils/useBlockchain';
-import ViewUser from '@/components/RegisUser/VIewUser';
 
 
 const Page = () => {
@@ -19,15 +18,15 @@ const Page = () => {
 
   return (
     <div>
-      <Header title={"User"} />
-      <MobileMenu />
+      <Header title={"Rumah Sakit"} />
+      <MobileMenu title={"Rumah Sakit"} />
 
       <OverlayMenu />
 
       <Breadcumb />
 
-      <ViewUser />
 
+      <h1>HALAMAN Rumah Sakit</h1>
     </div>
   )
 }

@@ -63,6 +63,9 @@ const FormRegis = () => {
                 .once('receipt', (receipt) => {
                     console.log(receipt);
                     setLoadingSubmit(false);
+
+                    window.location.reload();
+
                 });
         } catch (error) {
             console.error('Error submitting:', error);

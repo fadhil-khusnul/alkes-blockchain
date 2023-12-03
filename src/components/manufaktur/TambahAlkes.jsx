@@ -12,13 +12,18 @@ import Stack from '@mui/material/Stack';
 
 import Transactions from '../../build/Transactions.json';
 import RawAlkes from '../../build/RawAlkes.json';
+import Link from 'next/link';
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 
 const TambahAlkes = ({ subtitle }) => {
     const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain();
 
+    const gotoIcon = useRef();
 
+    const router = useRouter();
 
 
     console.log(loading, account, supplyChain);
@@ -123,18 +128,19 @@ const TambahAlkes = ({ subtitle }) => {
                 .send({ from: account })
                 .once('receipt', async (receipt) => {
                     setLoadingSubmit(true);
-
+ 
                     console.log(receipt);
-                    var rawMaterialAddresses = await supplyChain.methods.getAllPackages().call({ from: account });
-                    let rawMaterialAddress = rawMaterialAddresses[rawMaterialAddresses.length - 1];
-                    console.log(rawMaterialAddress);
-                    const rawMaterial = new web3.eth.Contract(RawAlkes.abi, rawMaterialAddress);
-                    const data = await rawMaterial.methods.getRawAlkes().call({ from: account });
+                    var rawAlkesAddresses = await supplyChain.methods.getAllPackages().call({ from: account });
+                    let rawAlkesAddress = rawAlkesAddresses[rawAlkesAddresses.length - 1];
+                    console.log(rawAlkesAddress);
+                    const rawAlkes = new web3.eth.Contract(RawAlkes.abi, rawAlkesAddress);
+                    const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
+                    
                     console.log(data[9]);
                     const txnContractAddress = data[9];
                     const txnHash = receipt.transactionHash;
                     const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
-                    await transactions.methods.createTxnEntry(txnHash, account, rawMaterialAddress, txnHash, '10', '10').send({ from: account });
+                    await transactions.methods.createTxnEntry(txnHash, account, rawAlkesAddress, txnHash, '10', '10').send({ from: account });
 
                     window.location.reload();
                 });
@@ -174,6 +180,19 @@ const TambahAlkes = ({ subtitle }) => {
 
     }
 
+
+
+    const goToDetails = (e) => {
+        e.preventDefault()
+        const keyword = gotoIcon.current.value;
+
+        console.log(keyword);
+        router.push(`/manufaktur/${keyword}`)  
+        
+
+
+    }
+
     const DataAlkesComp = () => {
         return (
             <ul>
@@ -184,19 +203,22 @@ const TambahAlkes = ({ subtitle }) => {
 
                                 <div className="top-rated-product-item clearfix">
                                     <div className="top-rated-product-img">
-                                        <a href="product-details.html"><img src="img/product/1.png" alt="#" /></a>
+                                            <i className="fas fa-stethoscope"></i>
+
                                     </div>
                                     <div className="top-rated-product-info">
-                                        <h2 className='product-title'><a href="product-details.html">{web3.utils.hexToUtf8(alkes.namAlkes).trim()} </a></h2>
+                                        <h2 className='product-title'>
+                                            <a href={`/manufaktur/${alkes.address}`}>
+                                                {web3.utils.hexToUtf8(alkes.namAlkes).trim()}
 
+                                            </a>
 
-
+                                        
+                                        </h2>
                                         <div className="product-price">
                                             <span>{alkes.address}</span>
                                         </div>
                                         <div className="product-brief">
-
-
                                             <h6>{web3.utils.hexToUtf8(alkes.tipeAlkes).trim()}</h6>
 
                                         </div>

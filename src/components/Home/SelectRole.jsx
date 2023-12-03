@@ -5,14 +5,19 @@ import styles from './page.module.css'
 import Link from 'next/link';
 import Image from 'next/image';
 
+import Background from '@/assets/img/bg/bg-full.jpg'
+
+
 const SelectRole = () => {
+
+    // const Background = "@/assets/img/bg/bg-full.jpg";
 
     return (
         <>
             <div className="ltn__utilize-overlay"></div>
             <div className="ltn__slider-area ltn__slider-3  section-bg-1">
                 <div className="ltn__slide-one-active slick-slide-arrow-1 slick-slide-dots-1">
-                    <div style={{ paddingTop: 50 + 'px', paddingBottom: 0 + 'px' }} className="ltn__slide-item ltn__slide-item-2 ltn__slide-item-3-normal--- ltn__slide-item-3 bg-image bg-overlay-theme-black-70" data-bs-bg="./img/bg/bg-full.jpg">
+                    <div style={{ paddingTop: 50 + 'px' }} className="ltn__slide-item ltn__slide-item-2 ltn__slide-item-3-normal--- ltn__slide-item-3 bg-image bg-overlay-theme-black-70" data-bs-bg={Background.src}>
                         <div className="ltn__slide-item-inner text-center">
                             <div className="container">
                                 <div className="row">
@@ -56,7 +61,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="product-details.html"><img src="./img/distributor.png" alt="#" /></a>
+                                                            <a href="/distributor"><img src="./img/distributor.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">2</li>
@@ -65,7 +70,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
+                                                                        <a href="/distributor">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -83,7 +88,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="product-details.html"><img src="./img/kemenkes.png" alt="#" /></a>
+                                                            <a href="/kemenkes"><img src="./img/kemenkes.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">3</li>
@@ -92,7 +97,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
+                                                                        <a href="/kemenkes">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -110,7 +115,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="product-details.html"><img src="./img/hospital.png" alt="#" /></a>
+                                                            <a href="/rumah-sakit"><img src="./img/hospital.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">4</li>
@@ -119,7 +124,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
+                                                                        <a href="/rumah-sakit" title="Rumah Sakit View">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>

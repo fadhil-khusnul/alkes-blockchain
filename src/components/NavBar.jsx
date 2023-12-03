@@ -6,22 +6,23 @@ const NavBar = () => {
         <nav>
             <div className="ltn__main-menu">
                 <ul>
-                    <li className="menu-icon"><a href="/product">Manufaktur</a>
+                    <li className="menu-icon"><a href="/manufaktur">Manufaktur</a>
                         <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
                             <li>
-                                <a href="/">Tambah Alat Kesehatan</a>
+                                <a href="/manufaktur">Tambah Alat Kesehatan</a>
                             </li>
+                            
                             <li>
-                                <a href="/">Request</a>
-                            </li>
-                            <li>
-                                <a href="/">Response</a>
+                                <a href="/manufaktur/response">Response</a>
                             </li>
                         </ul>
                     </li>
-                    <li className="menu-icon"><a href="#">Distributor</a>
+                    <li className="menu-icon"><a href="distributor">Distributor</a>
                         <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
                        
+                            <li>
+                                <a href="/distributor">Dashboard</a>
+                            </li>
                             <li>
                                 <a href="/">Request</a>
                             </li>

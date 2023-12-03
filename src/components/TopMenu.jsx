@@ -11,7 +11,7 @@ const TopMenu = () => {
                 </a>
             </div>
             <div className="mini-cart-icon">
-                <a href={"/"} as={"/"} passHref >
+                <a href={"/"} >
                     <i className="fas fa-arrow-right"></i>
                 </a>
             </div>
