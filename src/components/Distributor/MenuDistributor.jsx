@@ -16,7 +16,9 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Grow,
     IconButton,
+    LinearProgress,
     Paper,
     Step,
     StepLabel,
@@ -42,11 +44,15 @@ const MenuDistributor = () => {
     const [addressAlkes, setAddressAlkes] = useState("");
     const [details, setDetails] = useState([]);
     const [user, setUser] = useState([]);
-    const [dataAlkes, setAlkes] = useState([]);
-
     const [open, setOpen] = useState("");
     const [addressResponse, setAddressResponse] = useState("");
-
+    const [data, setData] = useState("");
+    const [status, setStatus] = useState("");
+    const [namaAlkes, setNamaAlkesFetch] = useState("");
+    const [klasifikasiAlkes, setklasifikasiAlkes] = useState("");
+    const [tipeAlkes, settipeAlkes] = useState("");
+    const [kelasAlkes, setkelasAlkes] = useState("");
+    const [kelasResiko, setkelasResiko] = useState("");
     const addressPackage = useRef()
 
     const [isLoading, setLoading] = useState(loading)
@@ -118,19 +124,6 @@ const MenuDistributor = () => {
                 )
                 console.log(listUser);
 
-                // const listAlkes = await Promise.all(
-                //     res.map(async (alkes) => {
-                //         const rawAlkes = new web3.eth.Contract(RawAlkes.abi, alkes.returnValues.packageAddr);
-                //         const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
-
-                //         console.log(data);
-                //         return data
-                //     })
-                // )
-                // console.log(listAlkes);
-
-                // setAlkes(listAlkes)
-
 
                 setUser(listUser)
 
@@ -142,8 +135,43 @@ const MenuDistributor = () => {
             }
         };
 
+
+
         fetchData();
     }, [account, web3, supplyChain])
+
+
+    useEffect(() => {
+        const fetchDataDetails = async () => {
+            try {
+                const rawMaterial = new web3.eth.Contract(RawAlkes.abi, addressResponse);
+                const fetchedData = await rawMaterial.methods.getRawAlkes().call({ from: account });
+                const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
+                console.log(fetchedData);
+
+                const nama = web3.utils.hexToUtf8(fetchedData[1]).trim();
+                const klasifikasi = web3.utils.hexToUtf8(fetchedData[3]).trim();
+                const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
+                const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
+                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
+
+
+
+                setNamaAlkesFetch(nama)
+                setklasifikasiAlkes(klasifikasi)
+                settipeAlkes(tipe)
+                setkelasAlkes(kelas)
+                setkelasResiko(kelas_resiko)
+                setData(fetchedData)
+                setStatus(fetchedStatus);
+            } catch (error) {
+                console.error("Error", error);
+            }
+        };
+
+        fetchDataDetails();
+
+    }, [addressResponse, account]);
 
     console.log(details);
     console.log(user);
@@ -273,29 +301,162 @@ const MenuDistributor = () => {
         setOpen(false);
     };
 
-    const ModalDetailAlkes = ({ addressResponse }) => {
+
+    const ModalDetailAlkes = () => {
+
+        console.log(status);
+
+
 
         const steps = [
             'Manufaktur',
             'Distributor',
             'Kemenkes',
             'Rumah Sakit',
+            
         ];
         console.log(addressResponse);
+        console.log(data);
+
+
         return (
+
             <Dialog
                 open={open}
                 onClose={handleClose}
                 PaperComponent={PaperComponent}
                 aria-labelledby="draggable-dialog-title"
             >
+
+
                 <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                    {addressResponse}
+                    <div className='text-center'>
+
+                        <i className="fas fa-stethoscope"></i>
+                    </div>
                 </DialogTitle>
+
                 <DialogContent>
+
                     <DialogContentText>
+                        <div className="ltn__team-details-member-info-details">
+                            <div className="row">
+                                <div className="col-lg-12">
+                                    <div className="ltn__team-details-member-about">
+                                        <table>
+                                            <tbody valign="top">
+                                                <tr>
+                                                    <td width={40}>
+                                                        <strong>
+
+                                                            Blockchain
+                                                        </strong>
+                                                    </td>
+                                                    <td width={10}>
+                                                        :
+                                                    </td>
+                                                    <td width={50}>
+                                                        {addressResponse}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Klasifikasi
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {klasifikasiAlkes}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Nama
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {namaAlkes}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Tipe
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {tipeAlkes}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Kelas
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {kelasAlkes}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Kelas Resiko
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {kelasResiko}
+
+                                                    </td>
+
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div className='mt-20 mb-20 text-center'>
+                            <strong>
+
+                                Progress
+                            </strong>
+                        </div>
+
+
+
+
                         <Box sx={{ width: '100%' }}>
-                            <Stepper activeStep={2} alternativeLabel>
+                            <Stepper activeStep={status + 1} alternativeLabel>
                                 {steps.map((label) => (
                                     <Step key={label}>
                                         <StepLabel>{label}</StepLabel>
@@ -312,7 +473,13 @@ const MenuDistributor = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+
         )
+
+
+
+
     }
 
 
@@ -394,7 +561,12 @@ const MenuDistributor = () => {
                 </div>
             </div >
 
-            <ModalDetailAlkes addressResponse={addressResponse} />
+
+
+            <ModalDetailAlkes />
+
+
+
 
         </>
     )

@@ -10,18 +10,13 @@ contract RawAlkes {
     address public Owner;
 
     enum packageStatus {
-        atCreator,
-        picked,
-        delivered
+        atManufactur,
+        atDistributor,
+        atKemenkes,
+        atRumahSakit
     }
 
-    event ShippmentUpdate(
-        address indexed ProductID,
-        address indexed Transporter,
-        address indexed Manufacturer,
-        uint TransporterType,
-        uint Status
-    );
+   
 
     address productid;
     bytes32 namaAlkes;
@@ -30,11 +25,12 @@ contract RawAlkes {
     bytes32 tipeAlkes;
     bytes32 kelasAlkes;
     bytes32 kelasResiko;
-    address transporter;
-    address manufacturer;
-    address supplier;
+    bytes32 noIzinEdar;
+    address distributor;
+    address manufakturer;
+    address kemenkes;
+    address rumahSakit;
     packageStatus status;
-    bytes32 packageReceiverDescription;
     address txnContractAddress;
 
     constructor(
@@ -46,7 +42,10 @@ contract RawAlkes {
         bytes32 _tipeAlkes,
         bytes32 _kelasAlkes,
         bytes32 _kelasResiko,
-        address _manufacturerAddr
+        bytes32 _noIzinEdar,
+        address _distributorAddr,
+        address _kemenkesAddr,
+        address _rumahSakitAddr
     ) public {
         Owner = _creatorAddr;
         productid = _productid;
@@ -56,10 +55,13 @@ contract RawAlkes {
         tipeAlkes = _tipeAlkes;
         kelasAlkes = _kelasAlkes;
         kelasResiko = _kelasResiko;
-        manufacturer = _manufacturerAddr;
-        supplier = _creatorAddr;
+        noIzinEdar = _noIzinEdar;
+        manufakturer = _creatorAddr;
+        distributor = _distributorAddr;
+        kemenkes = _kemenkesAddr;
+        rumahSakit = _rumahSakitAddr;
         status = packageStatus(0);
-        Transactions txnContract = new Transactions(_manufacturerAddr);
+        Transactions txnContract = new Transactions(_distributorAddr);
         txnContractAddress = address(txnContract);
     }
 
@@ -74,6 +76,9 @@ contract RawAlkes {
             bytes32,
             bytes32,
             bytes32,
+            bytes32,
+            address,
+            address,
             address,
             address,
             address
@@ -87,8 +92,11 @@ contract RawAlkes {
             tipeAlkes,
             kelasAlkes,
             kelasResiko,
-            supplier,
-            manufacturer,
+            noIzinEdar,
+            manufakturer,
+            distributor,
+            kemenkes,
+            rumahSakit,
             txnContractAddress
         );
     }
@@ -105,28 +113,8 @@ contract RawAlkes {
         return klasifikasiAlkes;
     }
 
-    function updateManufacturerAddress(address addr) public {
-        manufacturer = addr;
-    }
-
-    function pickPackage(address _transporterAddr) public {
-        require(
-            _transporterAddr == transporter,
-            "Only transporter of the package can pick package"
-        );
-        require(status == packageStatus(0), "Package must be at Supplier.");
+    function updatedistributorAddress(address addr) public {
+        distributor = addr;
         status = packageStatus(1);
-        emit ShippmentUpdate(productid, transporter, manufacturer, 1, 1);
-    }
-
-    function receivedPackage(address _manufacturerAddr) public {
-        require(
-            _manufacturerAddr == manufacturer,
-            "Only Manufacturer of the package can receieve the package"
-        );
-
-        require(status == packageStatus(1), "Product not picked up yet");
-        status = packageStatus(2);
-        emit ShippmentUpdate(productid, transporter, manufacturer, 1, 2);
     }
 }

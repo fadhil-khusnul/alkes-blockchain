@@ -24,7 +24,7 @@ export default function MobileMenu({ title }) {
                 <div className="ltn__utilize-menu">
                     <ul>
                         <li>
-                            <a href="/manufaktur">Manufakutur</a>
+                            <a href="/manufaktur">Manufaktur</a>
 
                         </li>
                         <li>

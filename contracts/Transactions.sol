@@ -11,15 +11,14 @@ contract Transactions {
         address fromAddr;
         address toAddr;
         bytes32 prevTxn;
-        string latitude;
-        string longitude;
+      
         uint timestamp;
     }
 
     mapping(uint => Txns) public transactions;
     uint public txnCount = 0;
 
-    event TxnCreated(bytes32 _txnHash, address _from, address _to, bytes32 _prev, uint _timestamp, string _latitude, string _longitude);
+    event TxnCreated(bytes32 _txnHash, address _from, address _to, bytes32 _prev, uint _timestamp);
 
     constructor(address _creator) {
         Creator = _creator;
@@ -29,19 +28,17 @@ contract Transactions {
         bytes32 _txnHash,
         address _from,
         address _to,
-        bytes32 _prev,
-        string memory _latitude,
-        string memory _longitude
+        bytes32 _prev
     ) public {
         uint _timestamp = block.timestamp;
         if (txnCount == 0) {
-            transactions[txnCount] = Txns(_txnHash, _from, _to, _prev, _latitude, _longitude, _timestamp);
+            transactions[txnCount] = Txns(_txnHash, _from, _to, _prev, _timestamp);
         } else {
             require(transactions[txnCount - 1].txnHash == _prev, "Transaction error occurred!");
-            transactions[txnCount] = Txns(_txnHash, _from, _to, _prev, _latitude, _longitude, _timestamp);
+            transactions[txnCount] = Txns(_txnHash, _from, _to, _prev, _timestamp);
         }
         txnCount += 1;
-        emit TxnCreated(_txnHash, _from, _to, _prev, _timestamp, _latitude, _longitude);
+        emit TxnCreated(_txnHash, _from, _to, _prev, _timestamp);
     }
 
     function getAllTransactions() public view returns (Txns[] memory) {
