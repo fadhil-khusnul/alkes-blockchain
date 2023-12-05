@@ -38,61 +38,55 @@ contract SupplyChain {
     //////////////// Events ////////////////////
 
     event UserRegister(address indexed _address, bytes32 name);
-    event buyEvent(
-        address buyer,
-        address indexed seller,
-        address packageAddr,
+    event requestEvent(
+        address distributor,
+        address indexed manufaktur,
+        address alkesAddr,
         uint indexed timestamp
     );
-    event respondEvent(
-        address indexed buyer,
-        address seller,
-        address packageAddr,
-        bytes signature,
+
+    event izinEvent(
+        address distributor,
+        address indexed kemenkes,
+        address alkesAddr,
         uint indexed timestamp
     );
-    event sendEvent(
-        address seller,
-        address buyer,
-        address indexed packageAddr,
-        bytes signature,
+   
+    event rsEvent(
+        address rs,
+        address indexed distributor,
+        address alkesAddr,
         uint indexed timestamp
     );
-    event receivedEvent(
-        address indexed buyer,
-        address seller,
-        address packageAddr,
-        bytes signature,
-        uint indexed timestamp
-    );
+   
 
     //////////////// Event functions (All entities) ////////////////////
 
     function requestProduct(
-        address buyer,
-        address seller,
+        address distributor,
+        address manufaktur,
         address packageAddr
     ) public {
-        emit buyEvent(buyer, seller, packageAddr, block.timestamp);
+        emit requestEvent(distributor, manufaktur, packageAddr, block.timestamp);
     }
 
-    function respondToEntity(
-        address buyer,
-        address seller,
-        address packageAddr,
-        bytes memory signature
+    function izinRequest(
+        address distributor,
+        address kemenkes,
+        address alkesAddr
     ) public {
-        emit respondEvent(buyer, seller, packageAddr, signature, block.timestamp);
+        emit izinEvent(distributor, kemenkes, alkesAddr, block.timestamp);
     }
 
-    function sendPackageToEntity(
-        address buyer,
-        address seller,
-        address packageAddr,
-        bytes memory signature
+    function reqAlkesRs(
+        address rs,
+        address distributor,
+        address alkesAddr
     ) public {
-        emit sendEvent(seller, buyer, packageAddr, signature, block.timestamp);
+        emit rsEvent(rs, distributor, alkesAddr, block.timestamp);
     }
+
+    
 
     /////////////// Users (Only Owner Executable) //////////////////////
 

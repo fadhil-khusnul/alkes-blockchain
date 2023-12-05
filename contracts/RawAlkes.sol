@@ -16,8 +16,6 @@ contract RawAlkes {
         atRumahSakit
     }
 
-   
-
     address productid;
     bytes32 namaAlkes;
     bytes32 deskripsiAlkes;
@@ -116,5 +114,20 @@ contract RawAlkes {
     function updatedistributorAddress(address addr) public {
         distributor = addr;
         status = packageStatus(1);
+    }
+
+    function distributorToKemenkes(address addr) public {
+        kemenkes = addr;
+    }
+
+    function izinEdarApprove(bytes32 nomor, address addr) public {
+        noIzinEdar = nomor;
+        kemenkes = addr;
+        status = packageStatus(2);
+    }
+
+    function distributorToRs(address addr) public {
+        rumahSakit = addr;
+        status = packageStatus(3);
     }
 }

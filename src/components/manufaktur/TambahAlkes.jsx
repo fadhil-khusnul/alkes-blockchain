@@ -33,7 +33,7 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { Check, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon, Visibility } from '@mui/icons-material';
+import { Check, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon, Launch, Visibility } from '@mui/icons-material';
 import Draggable from 'react-draggable';
 
 import Transactions from '../../build/Transactions.json';
@@ -74,6 +74,7 @@ const TambahAlkes = ({ subtitle }) => {
     const [tipeAlkes, settipeAlkes] = useState("");
     const [kelasAlkes, setkelasAlkes] = useState("");
     const [kelasResiko, setkelasResiko] = useState("");
+    const [izinEdar, setIzinEdar] = useState("");
 
     const addressPackage = useRef()
     const addressBuyer = useRef()
@@ -82,9 +83,7 @@ const TambahAlkes = ({ subtitle }) => {
     const dataBlockchain = async () => {
         try {
             const abi = await supplyChain.methods.getAllPackagesData().call({ from: account })
-            const abi2 = await supplyChain.methods.getAllPackages().call({ from: account })
             console.log(abi);
-            console.log(abi2);
 
             return abi
 
@@ -95,11 +94,11 @@ const TambahAlkes = ({ subtitle }) => {
     }
     const dataResponse = async () => {
         try {
-            let events = await supplyChain.getPastEvents('buyEvent', { filter: { seller: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('requestEvent', { filter: { manufaktur: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
-                return event.returnValues.seller === account;
+                return event.returnValues.manufaktur === account;
             });
 
             console.log(events);
@@ -122,7 +121,7 @@ const TambahAlkes = ({ subtitle }) => {
 
                 const listUser = await Promise.all(
                     responseAlkes.map(async (user) => {
-                        const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.seller).call()
+                        const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.manufaktur).call()
                         console.log(dataUser);
                         return dataUser
                     })
@@ -130,7 +129,7 @@ const TambahAlkes = ({ subtitle }) => {
 
                 const infoAlkes = await Promise.all(
                     responseAlkes.map(async (alkes) => {
-                        const rawMaterial = new web3.eth.Contract(RawAlkes.abi, alkes.returnValues.packageAddr);
+                        const rawMaterial = new web3.eth.Contract(RawAlkes.abi, alkes.returnValues.alkesAddr);
 
                         const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
                         console.log(fetchedStatus);
@@ -171,6 +170,7 @@ const TambahAlkes = ({ subtitle }) => {
                 const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
                 const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
                 const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
+                const izin_edar = web3.utils.hexToUtf8(fetchedData[7]).trim();
 
 
 
@@ -179,6 +179,7 @@ const TambahAlkes = ({ subtitle }) => {
                 settipeAlkes(tipe)
                 setkelasAlkes(kelas)
                 setkelasResiko(kelas_resiko)
+                setIzinEdar(izin_edar)
                 setData(fetchedData)
                 setStatus(fetchedStatus);
             } catch (error) {
@@ -241,7 +242,8 @@ const TambahAlkes = ({ subtitle }) => {
             const k = web3.utils.padRight(web3.utils.fromAscii(kelas), 64);
             const kr = web3.utils.padRight(web3.utils.fromAscii(kelas_resiko), 64);
 
-            console.log(kr);
+            console.log(d);
+            console.log(t);
             await supplyChain.methods
                 .createAlkesManufaktur(n, d, c, t, k, kr, kr, account, account, account)
                 .send({ from: account })
@@ -310,7 +312,16 @@ const TambahAlkes = ({ subtitle }) => {
         );
     }
 
-    const handleClickOpen = () => {
+    const handleClickOpen = (address) => {
+        setAddressResponse(address);
+        setOpen(true);
+    };
+
+    const handleClickOpenList = (address) => {
+        setAddressResponse(address);
+        setOpen(true);
+    };
+    const handleClickOpenAccept = () => {
         setAddressResponse(addressPackage.current.value);
         setOpen(true);
     };
@@ -319,17 +330,19 @@ const TambahAlkes = ({ subtitle }) => {
         setOpen(false);
     };
 
-    const handleAccept = async (e) => {
-        const buyerAddress = addressBuyer.current.value;
-
-        const address = addressPackage.current.value
-
-        console.log(address, buyerAddress);
+    const handleAccept = async (addressPackage, addressBuyer) => {
+        console.log(addressPackage, addressBuyer, account);
 
         try {
 
-            const rawAlkes = new web3.eth.Contract(RawAlkes.abi, address);
-            rawAlkes.methods.updatedistributorAddress(buyerAddress).send({ from: account });
+            const rawAlkes = new web3.eth.Contract(RawAlkes.abi, addressPackage);
+            rawAlkes.methods.updatedistributorAddress(addressBuyer).send({ from: account })
+                .once('receipt', async (receipt) => {
+                    console.log(receipt);
+                    window.location.reload()
+
+                });
+
         } catch (error) {
             console.error('Error:', error);
             throw error
@@ -399,21 +412,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
 
                                                 </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Klasifikasi
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {klasifikasiAlkes}
-
-                                                    </td>
-
-                                                </tr>
+                   
                                                 <tr>
                                                     <td>
                                                         <strong>
@@ -425,6 +424,21 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
                                                     <td>
                                                         {namaAlkes}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Klasifikasi
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {klasifikasiAlkes}
 
                                                     </td>
 
@@ -470,6 +484,106 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
                                                     <td>
                                                         {kelasResiko}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            No. Izin Edar
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            izinEdar != kelasResiko ? izinEdar : "-"
+                                                        }
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Manufaktur
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {data[8]}
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Distributor
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            data[9] != data[8]
+                                                                ?
+                                                                data[9]
+                                                                :
+                                                                "-"
+                                                        }
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            Kemenkes
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            data[10] != data[8]
+                                                                ?
+                                                                data[10]
+                                                                :
+
+                                                                "-"
+
+                                                        }
+
+
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            RS
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        :
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            data[11] != data[8]
+                                                                ?
+                                                                data[11]
+                                                                :
+
+                                                                "-"
+
+                                                        }
 
                                                     </td>
 
@@ -538,7 +652,7 @@ const TambahAlkes = ({ subtitle }) => {
 
                         {
                             details?.map((alkes, index) => (
-                                <Row key={alkes.returnValues.packageAddr} alkes={alkes} details={details} user={user} arrayStatus={arrayStatus} web3={web3} index={index} />
+                                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} details={details} user={user} arrayStatus={arrayStatus} web3={web3} index={index} />
                             ))
                         }
                     </TableBody>
@@ -549,10 +663,10 @@ const TambahAlkes = ({ subtitle }) => {
     }
 
 
-    const Row = ({ alkes, user, web3, index,  arrayStatus }) => {
+    const Row = ({ alkes, user, web3, index, arrayStatus }) => {
 
         console.log(alkes);
-        console.log(Number(arrayStatus[0]));
+        console.log(arrayStatus);
         console.log(user);
         // const { row } = props;
         const [open, setOpen] = useState(false);
@@ -572,16 +686,16 @@ const TambahAlkes = ({ subtitle }) => {
 
 
                     <TableCell component="th" scope="row">
-                        {alkes.returnValues.packageAddr}
+                        {alkes.returnValues.alkesAddr}
                     </TableCell>
 
-                    {user[index].userAddr === alkes.returnValues.seller
+                    {user[index].userAddr === alkes.returnValues.manufaktur
                         ?
 
                         <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
                         </TableCell>
                         :
-                        <TableCell align='right'>{alkes.returnValues.seller}</TableCell>
+                        <TableCell align='right'>{alkes.returnValues.manufaktur}</TableCell>
 
                     }
 
@@ -604,28 +718,28 @@ const TambahAlkes = ({ subtitle }) => {
                                     </TableHead>
                                     <TableBody>
 
-                                        <TableCell>{alkes.returnValues.buyer}</TableCell>
+                                        <TableCell>{alkes.returnValues.distributor}</TableCell>
                                         <TableCell>{new Date(alkes.returnValues.timestamp * 1000).toString()}</TableCell>
                                         <TableCell>
                                             {
-                                                 Number(arrayStatus[index]) < 1 
-                                                 ?
-                                                  "Delay" :
-                                                  "Approve"
+                                                Number(arrayStatus[index]) < 1
+                                                    ?
+                                                    "Delay" :
+                                                    "Approve"
                                             }
                                         </TableCell>
                                         <TableCell align='center'>
-                                            <IconButton ref={addressPackage} value={alkes.returnValues.packageAddr} onClick={handleClickOpen} aria-label="delete">
+                                            <IconButton onClick={()=>handleClickOpen(alkes.returnValues.alkesAddr)}>
                                                 <Visibility />
                                             </IconButton>
                                             {
                                                 Number(arrayStatus[index]) < 1 &&
-                                                <IconButton ref={addressBuyer} value={alkes.returnValues.buyer} onClick={handleAccept} aria-label="delete">
+                                                <IconButton onClick={() => handleAccept(alkes.returnValues.alkesAddr, alkes.returnValues.distributor)} >
                                                     <Check />
                                                 </IconButton>
                                             }
                                         </TableCell>
-                                        
+
 
                                     </TableBody>
                                 </Table>
@@ -653,10 +767,12 @@ const TambahAlkes = ({ subtitle }) => {
                                     </div>
                                     <div className="top-rated-product-info">
                                         <h2 className='product-title'>
-                                            <a href={`/manufaktur/${alkes.address}`}>
-                                                {web3.utils.hexToUtf8(alkes.namAlkes).trim()}
+                                            {web3.utils.hexToUtf8(alkes.namAlkes).trim()}
+                                            <button type='button' className='btn btn-icon px-1 py-1' onClick={() => handleClickOpenList(alkes.address)}>
+                                                <i className='fas fa-external-link-alt'></i>
+                                            </button>
 
-                                            </a>
+
 
 
                                         </h2>
@@ -780,7 +896,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                                                 >
                                                                                     <MenuItem value={"Kelas 1"}>Kelas 1</MenuItem>
                                                                                     <MenuItem value={"Kelas 2"}>Kelas 2</MenuItem>
-                                                                                    <MenuItem value={"Kelas 2"}>Kelas 3</MenuItem>
+                                                                                    <MenuItem value={"Kelas 3"}>Kelas 3</MenuItem>
                                                                                 </Select>
                                                                             </FormControl>
                                                                         </Box>

@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react'
 import Web3 from 'web3';
 import SupplyChain from '../../build/SupplyChain.json';
 import useBlockchain from '@/utils/useBlockchain';
+import Kemenkes from '@/components/Kemenkes/Kemenkes';
 
 
 const Page = () => {
@@ -25,8 +26,9 @@ const Page = () => {
 
       <Breadcumb />
 
+      <Kemenkes />
 
-      <h1>HALAMAN KEMENKES</h1>
+
     </div>
   )
 }
