@@ -75,10 +75,9 @@ const Kemenkes = ({ subtitle }) => {
 
 
 
-   
     const dataResponse = async () => {
         try {
-            let events = await supplyChain.getPastEvents('izinEvent', { filter: { kemenkes: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('IzinEvent', { filter: { kemenkes: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
@@ -158,12 +157,12 @@ const Kemenkes = ({ subtitle }) => {
                 const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
                 console.log(fetchedData);
 
-                const nama = web3.utils.hexToUtf8(fetchedData[1]).trim();
-                const klasifikasi = web3.utils.hexToUtf8(fetchedData[3]).trim();
-                const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
-                const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
-                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
-                const izin_edar = web3.utils.hexToUtf8(fetchedData[7]).trim();
+                const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
+                const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
+                const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
+                const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
+                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
+                const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
 
 
 
@@ -370,7 +369,7 @@ const Kemenkes = ({ subtitle }) => {
                                                         :
                                                     </td>
                                                     <td>
-                                                        {data[8]}
+                                                        {data[2]}
 
                                                     </td>
 
@@ -387,7 +386,7 @@ const Kemenkes = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[9] != data[8] ? data[9] : "-"
+                                                            data[3] != data[2] ? data[3] : "-"
                                                         }
 
                                                     </td>
@@ -405,7 +404,7 @@ const Kemenkes = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[10] != data[8] ? data[10] : "-"
+                                                            data[4] != data[2] ? data[4] : "-"
                                                         }
 
                                                     </td>
@@ -423,7 +422,7 @@ const Kemenkes = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[11] != data[8] ? data[11] : "-"
+                                                            data[5] != data[2] ? data[5] : "-"
                                                         }
 
                                                     </td>
@@ -653,10 +652,10 @@ const Kemenkes = ({ subtitle }) => {
                                         <TableCell>{alkes.returnValues.kemenkes}</TableCell>
                                         <TableCell>
                                             {
-                                                arrayStatus[index] != 2
+                                                arrayStatus[index] >= 2
                                                     ?
-                                                    "Delay" :
-                                                    "Approve"
+                                                    "Approve" :
+                                                    "Delay"
                                             }
                                         </TableCell>
                                         <TableCell>{new Date(alkes.returnValues.timestamp * 1000).toString()}</TableCell>

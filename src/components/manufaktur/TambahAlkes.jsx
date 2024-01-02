@@ -94,7 +94,7 @@ const TambahAlkes = ({ subtitle }) => {
     }
     const dataResponse = async () => {
         try {
-            let events = await supplyChain.getPastEvents('requestEvent', { filter: { manufaktur: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('RequestEvent', { filter: { manufaktur: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
@@ -165,12 +165,13 @@ const TambahAlkes = ({ subtitle }) => {
                 const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
                 console.log(fetchedData);
 
-                const nama = web3.utils.hexToUtf8(fetchedData[1]).trim();
-                const klasifikasi = web3.utils.hexToUtf8(fetchedData[3]).trim();
-                const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
-                const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
-                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
-                const izin_edar = web3.utils.hexToUtf8(fetchedData[7]).trim();
+                const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
+                const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
+                const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
+                const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
+                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
+                const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
+
 
 
 
@@ -235,6 +236,8 @@ const TambahAlkes = ({ subtitle }) => {
         setLoadingSubmit(false);
 
         try {
+
+           
             const n = web3.utils.padRight(web3.utils.fromAscii(nama_alkes), 64);
             const d = web3.utils.padRight(web3.utils.fromAscii(deskripsi_alkes), 64);
             const c = web3.utils.padRight(web3.utils.fromAscii(klasifikasi), 64);
@@ -242,10 +245,19 @@ const TambahAlkes = ({ subtitle }) => {
             const k = web3.utils.padRight(web3.utils.fromAscii(kelas), 64);
             const kr = web3.utils.padRight(web3.utils.fromAscii(kelas_resiko), 64);
 
+            const alkesDetails = {
+                namaAlkes: n,
+                deskripsiAlkes: d,
+                klasifikasiAlkes: c,
+                tipeAlkes: t,
+                kelasAlkes:k,
+                kelasResiko: kr,
+                noIzinEdar: kr
+            };
             console.log(d);
             console.log(t);
             await supplyChain.methods
-                .createAlkesManufaktur(n, d, c, t, k, kr, kr, account, account, account)
+                .createAlkesManufaktur(alkesDetails, account, account, account)
                 .send({ from: account })
                 .once('receipt', async (receipt) => {
                     setLoadingSubmit(true);
@@ -257,8 +269,8 @@ const TambahAlkes = ({ subtitle }) => {
                     const rawAlkes = new web3.eth.Contract(RawAlkes.abi, rawAlkesAddress);
                     const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
 
-                    console.log(data[9]);
-                    const txnContractAddress = data[9];
+                    console.log(data[6]);
+                    const txnContractAddress = data[6];
                     const txnHash = receipt.transactionHash;
                     const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
                     await transactions.methods.createTxnEntry(txnHash, account, rawAlkesAddress, txnHash).send({ from: account });
@@ -515,7 +527,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                         :
                                                     </td>
                                                     <td>
-                                                        {data[8]}
+                                                        {data[2]}
 
                                                     </td>
 
@@ -531,9 +543,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
                                                     <td>
                                                         {
-                                                            data[9] != data[8]
+                                                            data[3] != data[2]
                                                                 ?
-                                                                data[9]
+                                                                data[3]
                                                                 :
                                                                 "-"
                                                         }
@@ -552,9 +564,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
                                                     <td>
                                                         {
-                                                            data[10] != data[8]
+                                                            data[4] != data[2]
                                                                 ?
-                                                                data[10]
+                                                                data[4]
                                                                 :
 
                                                                 "-"
@@ -576,9 +588,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
                                                     <td>
                                                         {
-                                                            data[11] != data[8]
+                                                            data[5] != data[2]
                                                                 ?
-                                                                data[11]
+                                                                data[5]
                                                                 :
 
                                                                 "-"

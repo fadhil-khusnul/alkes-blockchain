@@ -1,7 +1,23 @@
+import Link from "next/link";
+import { useRouter } from "next/navigation"
+import { useEffect } from "react";
 
 const TopMenu = () => {
 
-  
+    const router = useRouter();
+
+    const handleBack = async () => {
+
+        await Promise.all([
+            router.back(),   
+            new Promise(resolve => setTimeout(resolve, 3000)),  // Add a delay (adjust as needed)
+            router.refresh(),   
+        ]);
+
+
+    }
+
+
     return (
         <div className="col--- ltn__header-options ltn__header-options-2 mb-sm-20">
 
@@ -11,7 +27,7 @@ const TopMenu = () => {
                 </a>
             </div>
             <div className="mini-cart-icon">
-                <a href={"/"} >
+                <a href="/" >
                     <i className="fas fa-arrow-right"></i>
                 </a>
             </div>

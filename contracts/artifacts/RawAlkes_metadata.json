@@ -1,0 +1,450 @@
+{
+	"compiler": {
+		"version": "0.8.0+commit.c7dfd78e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_creatorAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_productid",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "namaAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "deskripsiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "klasifikasiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "tipeAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasResiko",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "noIzinEdar",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct RawAlkes.AlkesDetails",
+						"name": "_alkesDetails",
+						"type": "tuple"
+					},
+					{
+						"internalType": "address",
+						"name": "_distributorAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_kemenkesAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_rumahSakitAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "Owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "alkesDetails",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "namaAlkes",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "deskripsiAlkes",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "klasifikasiAlkes",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "tipeAlkes",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "kelasAlkes",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "kelasResiko",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "noIzinEdar",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "distributor",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					}
+				],
+				"name": "distributorToKemenkes",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					}
+				],
+				"name": "distributorToRs",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getKlasifikasiALkes",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getNamaAlkes",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getRawAlkes",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "namaAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "deskripsiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "klasifikasiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "tipeAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasResiko",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "noIzinEdar",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct RawAlkes.AlkesDetails",
+						"name": "",
+						"type": "tuple"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getRawAlkesStatus",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "nomor",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					}
+				],
+				"name": "izinEdarApprove",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "kemenkes",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "manufakturer",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "productid",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "rumahSakit",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "status",
+				"outputs": [
+					{
+						"internalType": "enum RawAlkes.PackageStatus",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "txnContractAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					}
+				],
+				"name": "updatedistributorAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/RawAlkes.sol": "RawAlkes"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/RawAlkes.sol": {
+			"keccak256": "0x2994ebd53e8e68ab97c31a17cb885977d0375bc0e54e3e317956f7109b1128e5",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3f0ad96655136902b91668eb4ecf84b2dff1fee41ae9be66f431d142cfe1ab97",
+				"dweb:/ipfs/QmedoZTZ5ku7B627KDS2v3x51VUL8VyCmdYQfC9vRiZzVP"
+			]
+		},
+		"contracts/Transactions.sol": {
+			"keccak256": "0x2436d91df7077a71133634a33322b82d65861967b949ebb340998a67329d4c84",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ad24311ba6a9e9dc289de71da8fd213d665a4fe6afb198a1bfc76019272d287d",
+				"dweb:/ipfs/QmRbBAGwTiztxo5gH1Au234RAmu6gxQaSFTUFwVxwQv9Q9"
+			]
+		}
+	},
+	"version": 1
+}

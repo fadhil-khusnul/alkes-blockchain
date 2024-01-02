@@ -1,0 +1,541 @@
+{
+	"compiler": {
+		"version": "0.8.0+commit.c7dfd78e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "kemenkes",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "alkesAddr",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "IzinEvent",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "manufaktur",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "alkesAddr",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "RequestEvent",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "rs",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "alkesAddr",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "RsEvent",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "name",
+						"type": "bytes32"
+					}
+				],
+				"name": "UserRegister",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "Owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "_role",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "_addr",
+						"type": "address"
+					}
+				],
+				"name": "changeUserRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "namaAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "deskripsiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "klasifikasiAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "tipeAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasAlkes",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "kelasResiko",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "noIzinEdar",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct SupplyChain.SupplyChainAlkesDetails",
+						"name": "_alkesDetails",
+						"type": "tuple"
+					},
+					{
+						"internalType": "address",
+						"name": "_distributorAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_kemenkesAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_rumahSakitAddr",
+						"type": "address"
+					}
+				],
+				"name": "createAlkesManufaktur",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "dataAlkesManufaktur",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllPackages",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllPackagesData",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "",
+						"type": "bytes32[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getNoOfPackagesOfSupplier",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
+				"name": "getUserInfo",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "name",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "email",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "noTelp",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "enum SupplyChain.Roles",
+								"name": "role",
+								"type": "uint8"
+							},
+							{
+								"internalType": "address",
+								"name": "userAddr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct SupplyChain.UserData",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "kemenkes",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "alkesAddr",
+						"type": "address"
+					}
+				],
+				"name": "izinRequest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "name",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "email",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "noTelp",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "role",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "_userAddr",
+						"type": "address"
+					}
+				],
+				"name": "registerUser",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "rs",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "alkesAddr",
+						"type": "address"
+					}
+				],
+				"name": "reqAlkesRs",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "distributor",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "manufaktur",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "packageAddr",
+						"type": "address"
+					}
+				],
+				"name": "requestProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "userInfo",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "name",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "email",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "noTelp",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "enum SupplyChain.Roles",
+						"name": "role",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "userAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/SupplyChain.sol": "SupplyChain"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/RawAlkes.sol": {
+			"keccak256": "0x2994ebd53e8e68ab97c31a17cb885977d0375bc0e54e3e317956f7109b1128e5",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3f0ad96655136902b91668eb4ecf84b2dff1fee41ae9be66f431d142cfe1ab97",
+				"dweb:/ipfs/QmedoZTZ5ku7B627KDS2v3x51VUL8VyCmdYQfC9vRiZzVP"
+			]
+		},
+		"contracts/SupplyChain.sol": {
+			"keccak256": "0xa5264a066242dfe5474e9ffbc55fc04bd131a6b2a39b6deebfe8cc00f4c8082c",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://6f8e76050bf15485ad581f0c20d2da61f85babb5e9b9840e1196f7dfb8313926",
+				"dweb:/ipfs/QmdtNzXbity1MYhg2vijLDq1jBwzeAqBJrFqXocthSna5N"
+			]
+		},
+		"contracts/Transactions.sol": {
+			"keccak256": "0x2436d91df7077a71133634a33322b82d65861967b949ebb340998a67329d4c84",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ad24311ba6a9e9dc289de71da8fd213d665a4fe6afb198a1bfc76019272d287d",
+				"dweb:/ipfs/QmRbBAGwTiztxo5gH1Au234RAmu6gxQaSFTUFwVxwQv9Q9"
+			]
+		}
+	},
+	"version": 1
+}

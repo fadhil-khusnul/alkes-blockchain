@@ -104,7 +104,7 @@ const MenuDistributor = () => {
 
     const dataBlockchain = async () => {
         try {
-            let events = await supplyChain.getPastEvents('requestEvent', { filter: { distributor: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('RequestEvent', { filter: { distributor: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
@@ -122,7 +122,7 @@ const MenuDistributor = () => {
     }
     const dataResponse = async () => {
         try {
-            let events = await supplyChain.getPastEvents('rsEvent', { filter: { distributor: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('RsEvent', { filter: { distributor: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
@@ -138,7 +138,6 @@ const MenuDistributor = () => {
             throw error
         }
     }
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -219,12 +218,12 @@ const MenuDistributor = () => {
                 const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
                 console.log(fetchedData);
 
-                const nama = web3.utils.hexToUtf8(fetchedData[1]).trim();
-                const klasifikasi = web3.utils.hexToUtf8(fetchedData[3]).trim();
-                const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
-                const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
-                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
-                const izin_edar = web3.utils.hexToUtf8(fetchedData[7]).trim();
+                const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
+                const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
+                const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
+                const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
+                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
+                const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
 
 
 
@@ -412,6 +411,8 @@ const MenuDistributor = () => {
         console.log(alkes);
         console.log(Number(arrayStatusResponse[0]));
 
+        console.log(userResponse);
+
         // const { row } = props;
         const [open, setOpen] = useState(false);
 
@@ -436,7 +437,7 @@ const MenuDistributor = () => {
                     {userResponse[index].userAddr === alkes.returnValues.distributor
                         ?
 
-                        <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
+                        <TableCell align='right'>{web3.utils.hexToUtf8(userResponse[index].name).trim()}
                         </TableCell>
                         :
                         <TableCell align='right'>{alkes.returnValues.distributor}</TableCell>
@@ -706,7 +707,7 @@ const MenuDistributor = () => {
                                                         :
                                                     </td>
                                                     <td>
-                                                        {data[8]}
+                                                        {data[2]}
 
                                                     </td>
 
@@ -723,7 +724,7 @@ const MenuDistributor = () => {
                                                     <td>
 
                                                         {
-                                                            data[9] != data[8] ? data[9] : "-"
+                                                            data[3] != data[2] ? data[3] : "-"
                                                         }
 
                                                     </td>
@@ -741,7 +742,7 @@ const MenuDistributor = () => {
                                                     <td>
 
                                                         {
-                                                            data[10] != data[8] ? data[10] : "-"
+                                                            data[4] != data[2] ? data[4] : "-"
                                                         }
 
                                                     </td>
@@ -759,7 +760,7 @@ const MenuDistributor = () => {
                                                     <td>
 
                                                         {
-                                                            data[11] != data[8] ? data[11] : "-"
+                                                            data[5] != data[2] ? data[5] : "-"
                                                         }
 
                                                     </td>

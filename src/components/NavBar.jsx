@@ -6,52 +6,17 @@ const NavBar = () => {
         <nav>
             <div className="ltn__main-menu">
                 <ul>
-                    <li className="menu-icon"><a href="/manufaktur">Manufaktur</a>
-                        <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
-                            <li>
-                                <a href="/manufaktur">Tambah Alat Kesehatan</a>
-                            </li>
-                            
-                            <li>
-                                <a href="/manufaktur/response">Response</a>
-                            </li>
-                        </ul>
+                    <li className="menu"><a href="/manufaktur">Manufaktur</a>
+                        
                     </li>
-                    <li className="menu-icon"><a href="distributor">Distributor</a>
-                        <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
-                       
-                            <li>
-                                <a href="/distributor">Dashboard</a>
-                            </li>
-                            <li>
-                                <a href="/">Request</a>
-                            </li>
-                            <li>
-                                <a href="/">Response</a>
-                            </li>
-                        </ul>
+                    <li className="menu"><a href="/distributor">Distributor</a>
+                        
                     </li>
-                    <li className="menu-icon"><a href="#">Kemenkes</a>
-                        <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
-                          
-                            <li>
-                                <a href="/">Request</a>
-                            </li>
-                            <li>
-                                <a href="/">Response</a>
-                            </li>
-                        </ul>
+                    <li className="menu"><a href="/kemenkes">Kemenkes</a>
+                        
                     </li>
-                    <li className="menu-icon"><a href="#">Hospital</a>
-                        <ul className="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
-                           
-                            <li>
-                                <a href="/">Request</a>
-                            </li>
-                            <li>
-                                <a href="/">Response</a>
-                            </li>
-                        </ul>
+                    <li className="menu"><a href="/rumah-sakit">Rumah Sakit</a>
+                        
                     </li>
 
                     <li>

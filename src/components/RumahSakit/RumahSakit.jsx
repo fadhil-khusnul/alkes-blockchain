@@ -54,7 +54,7 @@ const RumahSakit = ({ subtitle }) => {
 
     //Request
 
-    
+
     const [addressDistribur, setAddressDistribur] = useState("");
     const [addressAlkes, setAddressAlkes] = useState("");
     const [isLoading, setLoading] = useState(loading)
@@ -67,10 +67,8 @@ const RumahSakit = ({ subtitle }) => {
     const [arrayStatus, setArrayStatus] = useState([]);
     const [arrayAlkes, setArrayAlkes] = useState([]);
     const [addressResponse, setAddressResponse] = useState("");
-    const [addressKemenkes, setAddressKemenkes] = useState("");
     const [data, setData] = useState("");
     const [open, setOpen] = useState("");
-    const [opensend, setOpenSend] = useState("");
 
     const [status, setStatus] = useState(0);
     const [namaAlkes, setNamaAlkesFetch] = useState("");
@@ -81,7 +79,6 @@ const RumahSakit = ({ subtitle }) => {
     const [izinEdar, setIzinEdar] = useState("");
 
     const addressPackage = useRef()
-    const noIzinEdar = useRef()
 
 
     const handleInputChangeForm = (e) => {
@@ -121,7 +118,7 @@ const RumahSakit = ({ subtitle }) => {
 
     const dataResponse = async () => {
         try {
-            let events = await supplyChain.getPastEvents('rsEvent', { filter: { rs: account }, fromBlock: 0, toBlock: 'latest' });
+            let events = await supplyChain.getPastEvents('RsEvent', { filter: { rs: account }, fromBlock: 0, toBlock: 'latest' });
             console.log(events);
 
             events = events.filter((event) => {
@@ -201,12 +198,12 @@ const RumahSakit = ({ subtitle }) => {
                 const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
                 console.log(fetchedData);
 
-                const nama = web3.utils.hexToUtf8(fetchedData[1]).trim();
-                const klasifikasi = web3.utils.hexToUtf8(fetchedData[3]).trim();
-                const tipe = web3.utils.hexToUtf8(fetchedData[4]).trim();
-                const kelas = web3.utils.hexToUtf8(fetchedData[5]).trim();
-                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[6]).trim();
-                const izin_edar = web3.utils.hexToUtf8(fetchedData[7]).trim();
+                const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
+                const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
+                const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
+                const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
+                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
+                const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
 
 
 
@@ -413,7 +410,7 @@ const RumahSakit = ({ subtitle }) => {
                                                         :
                                                     </td>
                                                     <td>
-                                                        {data[8]}
+                                                        {data[2]}
 
                                                     </td>
 
@@ -430,7 +427,7 @@ const RumahSakit = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[9] != data[8] ? data[9] : "-"
+                                                            data[3] != data[2] ? data[3] : "-"
                                                         }
 
                                                     </td>
@@ -448,7 +445,7 @@ const RumahSakit = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[10] != data[8] ? data[10] : "-"
+                                                            data[4] != data[2] ? data[4] : "-"
                                                         }
 
                                                     </td>
@@ -466,7 +463,7 @@ const RumahSakit = ({ subtitle }) => {
                                                     <td>
 
                                                         {
-                                                            data[11] != data[8] ? data[11] : "-"
+                                                            data[5] != data[2] ? data[5] : "-"
                                                         }
 
                                                     </td>
@@ -518,92 +515,14 @@ const RumahSakit = ({ subtitle }) => {
 
     }
 
-    //MODAL SEND
 
-    const handleClickOpenSend = (addressPackage, addressKemenkes) => {
-        setAddressKemenkes(addressKemenkes)
-        setAddressResponse(addressPackage)
-        setOpenSend(true);
-    };
+   
 
-    const handleCloseSend = () => {
-        setOpenSend(false);
-    };
+   
 
 
-    const handleSend = async (addressResponse, addressKemenkes) => {
-        const izinEdar = web3.utils.padRight(web3.utils.fromAscii(noIzinEdar.current.value), 64);
+   
 
-
-        console.log(addressResponse, addressKemenkes, izinEdar, account);
-
-        try {
-            const rawAlkes = new web3.eth.Contract(RawAlkes.abi, addressResponse);
-            rawAlkes.methods.izinEdarApprove(izinEdar, addressKemenkes).send({ from: account })
-                .once('receipt', async (receipt) => {
-                    console.log(receipt);
-                    window.location.reload()
-
-                });
-
-        } catch (error) {
-
-            console.error("error", error)
-        }
-
-    }
-
-    const ModalSend = () => {
-
-        return (
-            <Dialog
-                open={opensend}
-                onClose={handleCloseSend}
-                PaperComponent={PaperComponent}
-                aria-labelledby="draggable-dialog-title"
-            >
-                <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                    <div className='text-center'>
-
-                        Input Izin Edar
-                    </div>
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <div className='text-center'>
-
-                            Silahkan Masukkan Nomor Surat Izin Edar Untuk Alkes Ini.
-                            &ensp;
-                            <strong>
-                                {addressResponse}
-                            </strong>
-                        </div>
-                    </DialogContentText>
-                    <div className='mt-20'>
-
-                        <input
-
-                            type="text"
-                            id='noIzinEdar'
-                            name="noIzinEdar"
-                            ref={noIzinEdar}
-                            placeholder="Masukkan No Izin Edar Kemenkes"
-                        />
-
-
-                    </div>
-
-
-
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseSend}>Cancel</Button>
-                    <Button onClick={() => handleSend(addressResponse, addressKemenkes)}>Submit</Button>
-                </DialogActions>
-            </Dialog>
-        )
-
-    }
 
 
 
@@ -693,7 +612,16 @@ const RumahSakit = ({ subtitle }) => {
                                     </TableHead>
                                     <TableBody>
 
-                                        <TableCell>{alkes.returnValues.rs}</TableCell>
+                                        {user[index].userAddr === alkes.returnValues.rs
+                                            ?
+
+                                            <TableCell>{web3.utils.hexToUtf8(user[index].name).trim()}
+                                            </TableCell>
+                                            :
+                                            <TableCell>{alkes.returnValues.rs}</TableCell>
+
+                                        }
+
                                         <TableCell>
                                             {
                                                 arrayStatus[index] <= 2
@@ -709,7 +637,7 @@ const RumahSakit = ({ subtitle }) => {
                                                 <Visibility />
                                             </IconButton>
 
-                                            
+
                                         </TableCell>
 
 
@@ -814,7 +742,6 @@ const RumahSakit = ({ subtitle }) => {
             </div>
 
             <ModalDetailAlkes />
-            <ModalSend />
 
 
 

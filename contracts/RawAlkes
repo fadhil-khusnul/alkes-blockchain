@@ -1,0 +1,138 @@
+// SPDX-License-Identifier: MIT
+// pragma solidity >=0.6.6 <=0.8.23;
+pragma solidity ^0.8.0;
+
+pragma experimental ABIEncoderV2;
+
+import "./Transactions.sol";
+
+contract RawAlkes {
+    address public Owner;
+
+    enum PackageStatus {
+        AtManufacturer,
+        AtDistributore,
+        AtKemenkes,
+        AtRumahSakit
+    }
+
+    address productid;
+    bytes32 namaAlkes;
+    bytes32 deskripsiAlkes;
+    bytes32 klasifikasiAlkes;
+    bytes32 tipeAlkes;
+    bytes32 kelasAlkes;
+    bytes32 kelasResiko;
+    bytes32 noIzinEdar;
+    address distributor;
+    address manufakturer;
+    address kemenkes;
+    address rumahSakit;
+    PackageStatus status;
+    address txnContractAddress;
+
+    constructor(
+        address _creatorAddr,
+        address _productid,
+        bytes32 _namaAlkes,
+        bytes32 _deskripsiAlkes,
+        bytes32 _klasifikasiAlkes,
+        bytes32 _tipeAlkes,
+        bytes32 _kelasAlkes,
+        bytes32 _kelasResiko,
+        bytes32 _noIzinEdar,
+        address _distributorAddr,
+        address _kemenkesAddr,
+        address _rumahSakitAddr
+    ) {
+        Owner = _creatorAddr;
+        productid = _productid;
+        namaAlkes = _namaAlkes;
+        deskripsiAlkes = _deskripsiAlkes;
+        klasifikasiAlkes = _klasifikasiAlkes;
+        tipeAlkes = _tipeAlkes;
+        kelasAlkes = _kelasAlkes;
+        kelasResiko = _kelasResiko;
+        noIzinEdar = _noIzinEdar;
+        manufakturer = _creatorAddr;
+        distributor = _distributorAddr;
+        kemenkes = _kemenkesAddr;
+        rumahSakit = _rumahSakitAddr;
+        status = PackageStatus.AtManufacturer;
+        initializeTxnContract(_distributorAddr);
+
+    }
+
+    function initializeTxnContract(address _distributorAddr) internal {
+        Transactions txnContract = new Transactions(_distributorAddr);
+        txnContractAddress = address(txnContract);
+    }
+
+    function getRawAlkes()
+        public
+        view
+        returns (
+            address,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            bytes32,
+            address,
+            address,
+            address,
+            address,
+            address
+        )
+    {
+        return (
+            productid,
+            namaAlkes,
+            deskripsiAlkes,
+            klasifikasiAlkes,
+            tipeAlkes,
+            kelasAlkes,
+            kelasResiko,
+            noIzinEdar,
+            manufakturer,
+            distributor,
+            kemenkes,
+            rumahSakit,
+            txnContractAddress
+        );
+    }
+
+    function getNamaAlkes() public view returns (bytes32) {
+        return namaAlkes;
+    }
+
+    function getKlasifikasiALkes() public view returns (bytes32) {
+        return klasifikasiAlkes;
+    }
+
+    function getRawAlkesStatus() public view returns (uint) {
+        return uint(status);
+    }
+
+    function updatedistributorAddress(address addr) public {
+        distributor = addr;
+        status = PackageStatus(1);
+    }
+
+    function distributorToKemenkes(address addr) public {
+        kemenkes = addr;
+    }
+
+    function izinEdarApprove(bytes32 nomor, address addr) public {
+        noIzinEdar = nomor;
+        kemenkes = addr;
+        status = PackageStatus(2);
+    }
+
+    function distributorToRs(address addr) public {
+        rumahSakit = addr;
+        status = PackageStatus(3);
+    }
+}

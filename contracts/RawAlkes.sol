@@ -1,65 +1,72 @@
 // SPDX-License-Identifier: MIT
-// pragma solidity >=0.6.6 <=0.8.23;
 pragma solidity ^0.8.0;
-
 pragma experimental ABIEncoderV2;
 
 import "./Transactions.sol";
 
 contract RawAlkes {
-    address public Owner;
+    address public immutable owner;
 
-    enum packageStatus {
-        atManufactur,
-        atDistributor,
-        atKemenkes,
-        atRumahSakit
+    enum PackageStatus {
+        AtManufacturer,
+        AtDistributor,
+        AtKemenkes,
+        AtRumahSakit
     }
 
-    address productid;
-    bytes32 namaAlkes;
-    bytes32 deskripsiAlkes;
-    bytes32 klasifikasiAlkes;
-    bytes32 tipeAlkes;
-    bytes32 kelasAlkes;
-    bytes32 kelasResiko;
-    bytes32 noIzinEdar;
-    address distributor;
-    address manufakturer;
-    address kemenkes;
-    address rumahSakit;
-    packageStatus status;
-    address txnContractAddress;
+    struct AlkesDetails {
+        bytes32 namaAlkes;
+        bytes32 deskripsiAlkes;
+        bytes32 klasifikasiAlkes;
+        bytes32 tipeAlkes;
+        bytes32 kelasAlkes;
+        bytes32 kelasResiko;
+        bytes32 noIzinEdar;
+    }
+
+    address public immutable productid;
+    address public distributor;
+    address public immutable manufakturer;
+    address public kemenkes;
+    address public rumahSakit;
+
+    AlkesDetails public alkesDetails;
+    PackageStatus public status;
+    address public txnContractAddress;
 
     constructor(
         address _creatorAddr,
         address _productid,
-        bytes32 _namaAlkes,
-        bytes32 _deskripsiAlkes,
-        bytes32 _klasifikasiAlkes,
-        bytes32 _tipeAlkes,
-        bytes32 _kelasAlkes,
-        bytes32 _kelasResiko,
-        bytes32 _noIzinEdar,
+        AlkesDetails memory _alkesDetails,
         address _distributorAddr,
         address _kemenkesAddr,
         address _rumahSakitAddr
-    ) public {
-        Owner = _creatorAddr;
+    ) {
+        require(
+            _creatorAddr != address(0) &&
+                _productid != address(0) &&
+                _distributorAddr != address(0) &&
+                _kemenkesAddr != address(0) &&
+                _rumahSakitAddr != address(0)
+        );
+        // require(_productid != address(0) );
+        // require(_distributorAddr != address(0));
+        // require(_kemenkesAddr != address(0));
+        // require(_rumahSakitAddr != address(0));
+
+        owner = _creatorAddr;
         productid = _productid;
-        namaAlkes = _namaAlkes;
-        deskripsiAlkes = _deskripsiAlkes;
-        klasifikasiAlkes = _klasifikasiAlkes;
-        tipeAlkes = _tipeAlkes;
-        kelasAlkes = _kelasAlkes;
-        kelasResiko = _kelasResiko;
-        noIzinEdar = _noIzinEdar;
+        alkesDetails = _alkesDetails;
         manufakturer = _creatorAddr;
         distributor = _distributorAddr;
         kemenkes = _kemenkesAddr;
         rumahSakit = _rumahSakitAddr;
-        status = packageStatus(0);
-        Transactions txnContract = new Transactions(_distributorAddr);
+        status = PackageStatus.AtManufacturer;
+        initializeTxnContract(_distributorAddr);
+    }
+
+    function initializeTxnContract(address distributorAddr) internal {
+        Transactions txnContract = new Transactions(distributorAddr);
         txnContractAddress = address(txnContract);
     }
 
@@ -68,13 +75,7 @@ contract RawAlkes {
         view
         returns (
             address,
-            bytes32,
-            bytes32,
-            bytes32,
-            bytes32,
-            bytes32,
-            bytes32,
-            bytes32,
+            AlkesDetails memory,
             address,
             address,
             address,
@@ -84,13 +85,7 @@ contract RawAlkes {
     {
         return (
             productid,
-            namaAlkes,
-            deskripsiAlkes,
-            klasifikasiAlkes,
-            tipeAlkes,
-            kelasAlkes,
-            kelasResiko,
-            noIzinEdar,
+            alkesDetails,
             manufakturer,
             distributor,
             kemenkes,
@@ -99,35 +94,41 @@ contract RawAlkes {
         );
     }
 
+    function getNamaAlkes() public view returns (bytes32) {
+        return alkesDetails.namaAlkes;
+    }
+
+    function getKlasifikasiALkes() public view returns (bytes32) {
+        return alkesDetails.klasifikasiAlkes;
+    }
+
     function getRawAlkesStatus() public view returns (uint) {
         return uint(status);
     }
 
-    function getNamaAlkes() public view returns (bytes32) {
-        return namaAlkes;
-    }
-
-    function getKlasifikasiALkes() public view returns (bytes32) {
-        return klasifikasiAlkes;
-    }
-
     function updatedistributorAddress(address addr) public {
+        require(addr != address(0), "Invalid address");
+
         distributor = addr;
-        status = packageStatus(1);
+        status = PackageStatus.AtDistributor;
     }
 
     function distributorToKemenkes(address addr) public {
+        require(addr != address(0), "Invalid address");
+
         kemenkes = addr;
     }
 
     function izinEdarApprove(bytes32 nomor, address addr) public {
-        noIzinEdar = nomor;
+        alkesDetails.noIzinEdar = nomor;
+        require(addr != address(0), "Invalid address");
         kemenkes = addr;
-        status = packageStatus(2);
+        status = PackageStatus.AtKemenkes;
     }
 
     function distributorToRs(address addr) public {
+        require(addr != address(0), "Invalid address");
         rumahSakit = addr;
-        status = packageStatus(3);
+        status = PackageStatus.AtRumahSakit;
     }
 }
