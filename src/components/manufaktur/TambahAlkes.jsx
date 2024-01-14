@@ -251,8 +251,8 @@ const TambahAlkes = ({ subtitle }) => {
                 klasifikasiAlkes: c,
                 tipeAlkes: t,
                 kelasAlkes:k,
-                kelasResiko: kr,
-                noIzinEdar: kr
+                kelasReseeiko: kr,
+                noIz2inEdar: kr
             };
             console.log(d);
             console.log(t);
