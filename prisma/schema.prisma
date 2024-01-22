@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// informasi_alkes.prisma
+
+model InformasiAlkes {
+  id             Int      @id @default(autoincrement())
+  nama_alkes     String
+  deskripsi_alkes String
+  kategori_alkes String
+  subkategori_alkes String
+  klasifikasi    String
+  tipe_alkes     String
+  kelas_resiko   String
+  kuantitas      Int
+  generatedIds   GeneratedIds[]
+
+}
+
+model GeneratedIds {
+  id            Int       @id @default(autoincrement())
+  informasiAlkes InformasiAlkes @relation(fields: [informasiAlkesId], references: [id])
+  informasiAlkesId Int
+  generatedId   String
+
+  @@unique([generatedId])
+}
+

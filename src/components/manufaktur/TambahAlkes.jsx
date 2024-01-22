@@ -3,6 +3,7 @@ import Loader from '../Loader/Loader';
 import useBlockchain from '@/utils/useBlockchain';
 
 
+
 import {
     Alert,
     Box,
@@ -31,9 +32,10 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography,
 } from '@mui/material';
-import { Check, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon, Launch, Visibility } from '@mui/icons-material';
+import { Check, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon, Launch, Settings, Visibility } from '@mui/icons-material';
 import Draggable from 'react-draggable';
 
 import Transactions from '../../build/Transactions.json';
@@ -41,10 +43,14 @@ import RawAlkes from '../../build/RawAlkes.json';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import categories from './categories';
+import { v4 as uuidv4 } from 'uuid';
+import TabelGenerateId from './TableGenerateId';
 
 
 
 const TambahAlkes = ({ subtitle }) => {
+    console.log(categories);
     const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain();
 
 
@@ -57,6 +63,7 @@ const TambahAlkes = ({ subtitle }) => {
     const [tipe_alkes, settipe_alkes] = useState("");
     const [kelas, setkelas] = useState("");
     const [kelas_resiko, setkelas_resiko] = useState("");
+    const [kuantitas, setKuantitas] = useState("");
     const [loadingSubmit, setLoadingSubmit] = useState(loading);
     const [dataAlkes, setAlkes] = useState([])
 
@@ -76,8 +83,35 @@ const TambahAlkes = ({ subtitle }) => {
     const [kelasResiko, setkelasResiko] = useState("");
     const [izinEdar, setIzinEdar] = useState("");
 
-    const addressPackage = useRef()
-    const addressBuyer = useRef()
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSubcategory, setSelectedSubcategory] = useState('');
+
+    const addressPackage = useRef();
+
+
+    const [count, setCount] = useState(1);
+
+    const [generatedIds, setGeneratedIds] = useState([]);
+
+    const handleGenerateIds = () => {
+        const newIds = Array.from({ length: count }, () => uuidv4());
+        setGeneratedIds(newIds);
+    };
+
+    const handleCountChange = (e) => {
+        const newCount = parseInt(e.target.value, 10) || 1;
+        setCount(newCount);
+    };
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
+        setSelectedSubcategory('');
+    };
+
+    const handleSubcategoryChange = (e) => {
+        setSelectedSubcategory(e.target.value);
+    };
+
+    const subcategoriesOptions = selectedCategory && categories.find((item) => item.category === selectedCategory)?.subcategories;
 
 
     const dataBlockchain = async () => {
@@ -221,13 +255,12 @@ const TambahAlkes = ({ subtitle }) => {
         console.log(e.target);
         if (e.target.name === 'klasifikasi') {
             setklasifikasi(e.target.value);
-        } else if (e.target.name === 'kelas') {
-            setkelas(e.target.value);
-        } else if (e.target.name === 'kelas_resiko') {
+        }  else if (e.target.name === 'kelas_resiko') {
             setkelas_resiko(e.target.value);
         }
 
     }
+
 
     const handleSubmit = async (e) => {
 
@@ -237,7 +270,7 @@ const TambahAlkes = ({ subtitle }) => {
 
         try {
 
-           
+
             const n = web3.utils.padRight(web3.utils.fromAscii(nama_alkes), 64);
             const d = web3.utils.padRight(web3.utils.fromAscii(deskripsi_alkes), 64);
             const c = web3.utils.padRight(web3.utils.fromAscii(klasifikasi), 64);
@@ -250,7 +283,7 @@ const TambahAlkes = ({ subtitle }) => {
                 deskripsiAlkes: d,
                 klasifikasiAlkes: c,
                 tipeAlkes: t,
-                kelasAlkes:k,
+                kelasAlkes: k,
                 kelasReseeiko: kr,
                 noIz2inEdar: kr
             };
@@ -284,6 +317,43 @@ const TambahAlkes = ({ subtitle }) => {
             setLoadingSubmit(false);
         }
     };
+
+    const handleSubmit2 = async (e) =>{
+
+        const kategori_alkes = selectedCategory
+        const subkategori_alkes = selectedSubcategory;
+        const kuantitas = count;
+        
+        console.log(
+            nama_alkes,
+            deskripsi_alkes,
+            kategori_alkes,
+            subkategori_alkes,
+            klasifikasi,
+            tipe_alkes,
+            kelas_resiko,
+            kuantitas,
+            generatedIds,
+        );
+        e.preventDefault()
+
+        const data = { 
+            nama_alkes,
+            deskripsi_alkes,
+            kategori_alkes,
+            subkategori_alkes,
+            klasifikasi,
+            tipe_alkes,
+            kelas_resiko,
+            kuantitas,
+            generatedIds,        
+        }
+
+        const response = await fetch("/api/informasiAlkes", {
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+    }
     if (loading) {
         return <Loader></Loader>;
     }
@@ -424,7 +494,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                     </td>
 
                                                 </tr>
-                   
+
                                                 <tr>
                                                     <td>
                                                         <strong>
@@ -741,7 +811,7 @@ const TambahAlkes = ({ subtitle }) => {
                                             }
                                         </TableCell>
                                         <TableCell align='center'>
-                                            <IconButton onClick={()=>handleClickOpen(alkes.returnValues.alkesAddr)}>
+                                            <IconButton onClick={() => handleClickOpen(alkes.returnValues.alkesAddr)}>
                                                 <Visibility />
                                             </IconButton>
                                             {
@@ -847,7 +917,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                 <div className='tab-pane fade' id='liton_tab_2'>
                                                     <div className="ltn__form-box contact-form-box box-shadow white-bg">
                                                         <h4 className="title-2">{subtitle}</h4>
-                                                        <form onSubmit={handleSubmit}>
+                                                        <form onSubmit={handleSubmit2}>
                                                             <div className="row">
                                                                 <div className="col-md-12">
                                                                     <div className="input-item input-item-name ltn__custom-icon">
@@ -867,7 +937,66 @@ const TambahAlkes = ({ subtitle }) => {
                                                                                 fullWidth
                                                                                 sx={{ ...stylesSelect }}
                                                                             >
-                                                                                <InputLabel>Klasifikasi Alkes</InputLabel>
+                                                                                <InputLabel>Kategori Alkes</InputLabel>
+                                                                                <Select
+                                                                                    id="kategori_alkes"
+                                                                                    name='kategori_alkes'
+                                                                                    label="kategori_alkes"
+                                                                                    value={selectedCategory}
+                                                                                    onChange={handleCategoryChange}
+                                                                                >
+                                                                                    {
+                                                                                        categories.map((item, index) => (
+                                                                                            <MenuItem key={index} value={item.category}>
+                                                                                                {item.category}
+                                                                                            </MenuItem>
+                                                                                        ))
+                                                                                    }
+
+                                                                                </Select>
+                                                                            </FormControl>
+                                                                        </Box>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-md-12">
+                                                                    <div className="input-item input-item-select">
+                                                                        <Box>
+                                                                            <FormControl
+                                                                                borderRadius={0}
+                                                                                fullWidth
+                                                                                sx={{ ...stylesSelect }}
+                                                                            >
+                                                                                <InputLabel>Sub Kategori Alkes</InputLabel>
+                                                                                <Select
+                                                                                    id="kategori_alkes"
+                                                                                    name='kategori_alkes'
+                                                                                    label="kategori_alkes"
+                                                                                    value={selectedSubcategory}
+                                                                                    onChange={handleSubcategoryChange}
+                                                                                >
+                                                                                    {subcategoriesOptions &&
+                                                                                        subcategoriesOptions.map((subcategory, index) => (
+                                                                                            <MenuItem key={index} value={subcategory}>
+                                                                                                {subcategory}
+                                                                                            </MenuItem>
+                                                                                        ))}
+
+                                                                                </Select>
+                                                                            </FormControl>
+                                                                        </Box>
+
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-md-12">
+                                                                    <div className="input-item input-item-select">
+                                                                        <Box>
+                                                                            <FormControl
+                                                                                borderRadius={0}
+                                                                                fullWidth
+                                                                                sx={{ ...stylesSelect }}
+                                                                            >
+                                                                                <InputLabel>Jenis Elektromedik</InputLabel>
                                                                                 <Select
                                                                                     id="klasifikasi"
                                                                                     name='klasifikasi'
@@ -891,7 +1020,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                                     </div>
                                                                 </div>
 
-                                                                <div className="col-md-12">
+                                                                {/* <div className="col-md-12">
                                                                     <div className="input-item input-item-select">
                                                                         <Box>
                                                                             <FormControl
@@ -914,7 +1043,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                                         </Box>
 
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                                 <div className="col-md-12">
                                                                     <div className="input-item input-item-select">
                                                                         <Box>
@@ -938,6 +1067,40 @@ const TambahAlkes = ({ subtitle }) => {
                                                                         </Box>
                                                                     </div>
                                                                 </div>
+                                                                <div className="col-md-12">
+                                                                    <div className="input-item input-item-select">
+                                                                        <Box>
+                                                                            <FormControl
+                                                                                fullWidth
+                                                                                sx={{ ...stylesSelect }}
+                                                                            >
+                                                                                <TextField
+                                                                                    id="kuantitas"
+                                                                                    label="Kuantitas"
+                                                                                    type="number"
+                                                                                    value={count}
+                                                                                    onChange={handleCountChange}
+                                                                                    inputProps={{
+                                                                                        min: 1,
+                                                                                        step: 1,
+                                                                                    }}
+
+                                                                                />
+
+
+                                                                            </FormControl>
+                                                                            <Button size='small' variant="contained" color='primary' onClick={handleGenerateIds}>
+                                                                                Generate ID
+                                                                            </Button>
+                                                                            <TabelGenerateId generatedIds={generatedIds} />
+                                                                        </Box>
+
+
+
+
+                                                                    </div>
+
+                                                                </div>
 
                                                             </div>
                                                             {!loadingSubmit
@@ -955,7 +1118,9 @@ const TambahAlkes = ({ subtitle }) => {
                                                                 <button className="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Submit</button>
                                                             </div>
                                                         </form>
+                                                    </div>
 
+                                                    <div className="ltn__form-box contact-form-box box-shadow white-bg">
 
 
 
