@@ -15,22 +15,31 @@ contract RawAlkes {
     }
 
     struct AlkesDetails {
-        bytes32 namaAlkes;
-        bytes32 deskripsiAlkes;
-        bytes32 klasifikasiAlkes;
-        bytes32 tipeAlkes;
-        bytes32 kelasAlkes;
-        bytes32 kelasResiko;
-        bytes32 noIzinEdar;
+        bytes namaAlkes;
+        bytes deskripsiAlkes;
+        bytes kategori_alkes;
+        bytes subkategori_alkes;
+        bytes klasifikasiAlkes;
+        bytes tipeAlkes;
+        bytes kelasResiko;
+        bytes kuantitas;
+        bytes noIzinEdar;
     }
+    // struct DataGeneratedId {
+    //     bytes id_informasi;
+    //     bytes id_produk;
+        
+    // }
 
     address public immutable productid;
     address public distributor;
     address public immutable manufakturer;
     address public kemenkes;
     address public rumahSakit;
+    address public pasien;
 
     AlkesDetails public alkesDetails;
+    // DataGeneratedId public generatedIds;
     PackageStatus public status;
     address public txnContractAddress;
 
@@ -40,14 +49,17 @@ contract RawAlkes {
         AlkesDetails memory _alkesDetails,
         address _distributorAddr,
         address _kemenkesAddr,
-        address _rumahSakitAddr
+        address _rumahSakitAddr,
+        address _pasienAddr
+        // DataGeneratedId memory _generatedIds
     ) {
         require(
             _creatorAddr != address(0) &&
                 _productid != address(0) &&
                 _distributorAddr != address(0) &&
                 _kemenkesAddr != address(0) &&
-                _rumahSakitAddr != address(0)
+                _rumahSakitAddr != address(0) &&
+                _pasienAddr != address(0)
         );
         // require(_productid != address(0) );
         // require(_distributorAddr != address(0));
@@ -61,6 +73,7 @@ contract RawAlkes {
         distributor = _distributorAddr;
         kemenkes = _kemenkesAddr;
         rumahSakit = _rumahSakitAddr;
+        pasien = _pasienAddr;
         status = PackageStatus.AtManufacturer;
         initializeTxnContract(_distributorAddr);
     }
@@ -80,6 +93,7 @@ contract RawAlkes {
             address,
             address,
             address,
+            address,
             address
         )
     {
@@ -90,15 +104,16 @@ contract RawAlkes {
             distributor,
             kemenkes,
             rumahSakit,
+            pasien,
             txnContractAddress
         );
     }
 
-    function getNamaAlkes() public view returns (bytes32) {
+    function getNamaAlkes() public view returns (bytes memory) {
         return alkesDetails.namaAlkes;
     }
 
-    function getKlasifikasiALkes() public view returns (bytes32) {
+    function getKlasifikasiALkes() public view returns (bytes memory) {
         return alkesDetails.klasifikasiAlkes;
     }
 
@@ -119,7 +134,7 @@ contract RawAlkes {
         kemenkes = addr;
     }
 
-    function izinEdarApprove(bytes32 nomor, address addr) public {
+    function izinEdarApprove(bytes memory nomor, address addr) public {
         alkesDetails.noIzinEdar = nomor;
         require(addr != address(0), "Invalid address");
         kemenkes = addr;

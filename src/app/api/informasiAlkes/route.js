@@ -3,6 +3,7 @@ import prisma from "@/utils/prisma"
 export async function POST(request) {
 
         const {
+                
                 nama_alkes,
                 deskripsi_alkes,
                 kategori_alkes,
@@ -12,11 +13,14 @@ export async function POST(request) {
                 kelas_resiko,
                 kuantitas,
                 generatedIds,
+                blockchain_address,
+                
         } = await request.json()
 
 
         const informasiAlkes = await prisma.informasiAlkes.create({
                 data: {
+                        blockchain_address,
                         nama_alkes,
                         deskripsi_alkes,
                         kategori_alkes,

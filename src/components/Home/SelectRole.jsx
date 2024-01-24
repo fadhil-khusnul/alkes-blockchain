@@ -34,7 +34,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 bg-overlay-white-50 text-center">
                                                         <div className="product-img">
-                                                            <a href="/manufaktur"><img src="./img/manufaktur.png" alt="#" /></a>
+                                                            <a target='_blank' href="/manufaktur"><img src="./img/manufaktur.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">1</li>
@@ -43,7 +43,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="/manufaktur">
+                                                                        <a target='_blank' href="/manufaktur">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -53,7 +53,7 @@ const SelectRole = () => {
                                                         </div>
                                                         <div className="product-info">
 
-                                                            <h2 className="product-title text-white"><a href="/manufaktur">Manufaktur</a></h2>
+                                                            <h2 className="product-title text-white"><a target='_blank' href="/manufaktur">Manufaktur</a></h2>
 
                                                         </div>
                                                     </div>
@@ -61,7 +61,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="/distributor"><img src="./img/distributor.png" alt="#" /></a>
+                                                            <a target='_blank' href="/distributor"><img src="./img/distributor.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">2</li>
@@ -70,7 +70,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="/distributor">
+                                                                        <a target='_blank' href="/distributor">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -80,7 +80,7 @@ const SelectRole = () => {
                                                         </div>
                                                         <div className="product-info">
 
-                                                            <h2 className="product-title text-white"><a href="/distributor">Distributor</a></h2>
+                                                            <h2 className="product-title text-white"><a target='_blank' href="/distributor">Distributor</a></h2>
 
                                                         </div>
                                                     </div>
@@ -88,7 +88,7 @@ const SelectRole = () => {
                                                 <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="/kemenkes"><img src="./img/kemenkes.png" alt="#" /></a>
+                                                            <a target='_blank' href="/kemenkes"><img src="./img/kemenkes.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">3</li>
@@ -97,7 +97,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="/kemenkes">
+                                                                        <a target='_blank' href="/kemenkes">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -107,7 +107,7 @@ const SelectRole = () => {
                                                         </div>
                                                         <div className="product-info">
 
-                                                            <h2 className="product-title text-white"><a href="/kemenkes">Kemenkes</a></h2>
+                                                            <h2 className="product-title text-white"><a target='_blank' href="/kemenkes">Kemenkes</a></h2>
 
                                                         </div>
                                                     </div>
@@ -124,7 +124,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="/rumah-sakit" title="Rumah Sakit View">
+                                                                        <a href="/rumah-sakit" target='_blank' title="Rumah Sakit View">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -133,7 +133,7 @@ const SelectRole = () => {
                                                             </div>
                                                         </div>
                                                         <div className="product-info text-white">
-                                                            <h2 className="product-title text-white"><a href="/rumah-sakit">Rumah Sakit</a></h2>
+                                                            <h2 className="product-title text-white"><a href="/rumah-sakit" target='_blank'>Rumah Sakit</a></h2>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -141,6 +141,7 @@ const SelectRole = () => {
                                                 <div className="animated pb-50">
                                                     <a
                                                         href={"/registrasi-user"}
+                                                        target='_blank'
                                                         className="theme-btn-1 btn btn-effect-1">
                                                         Registrasi User <i className='fas fa-user-plus'></i>
                                                     </a>

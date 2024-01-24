@@ -2,12 +2,13 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import './RawAlkes.sol';
+import "./RawAlkes.sol";
+import "./DataGeneratedId.sol";
 
 contract SupplyChain {
     address public immutable owner;
 
-    constructor()  {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -16,51 +17,94 @@ contract SupplyChain {
         _;
     }
 
-    enum Roles { NoRole, Manufaktur, Distributor, Kemenkes, RumahSakit, Customer }
+    enum Roles {
+        NoRole,
+        Manufaktur,
+        Distributor,
+        Kemenkes,
+        RumahSakit,
+        Customer
+    }
 
     struct UserData {
-        bytes32 name;
-        bytes32 email;
-        bytes32 noTelp;
+        bytes name;
+        bytes email;
+        bytes noTelp;
         Roles role;
         address userAddr;
     }
 
     struct SupplyChainAlkesDetails {
-        bytes32 namaAlkes;
-        bytes32 deskripsiAlkes;
-        bytes32 klasifikasiAlkes;
-        bytes32 tipeAlkes;
-        bytes32 kelasAlkes;
-        bytes32 kelasResiko;
-        bytes32 noIzinEdar;
+        bytes namaAlkes;
+        bytes deskripsiAlkes;
+        bytes kategori_alkes;
+        bytes subkategori_alkes;
+        bytes klasifikasiAlkes;
+        bytes tipeAlkes;
+        bytes kelasResiko;
+        bytes kuantitas;
+        bytes noIzinEdar;
     }
-
-    
+    struct DataGeneratedIdSupply {
+        // address id_informasi;
+        bytes id_produk;
+    }
 
     mapping(address => UserData) public userInfo;
 
-    event UserRegister(address indexed _address, bytes32 name);
-    event RequestEvent(address indexed distributor, address indexed manufaktur, address alkesAddr, uint indexed timestamp);
-    event IzinEvent(address indexed distributor, address indexed kemenkes, address alkesAddr, uint indexed timestamp);
-    event RsEvent(address rs, address indexed distributor, address alkesAddr, uint indexed timestamp);
+    event UserRegister(address indexed _address, bytes name);
+    event RequestEvent(
+        address indexed distributor,
+        address indexed manufaktur,
+        address alkesAddr,
+        uint indexed timestamp
+    );
+    event IzinEvent(
+        address indexed distributor,
+        address indexed kemenkes,
+        address alkesAddr,
+        uint indexed timestamp
+    );
+    event RsEvent(
+        address rs,
+        address indexed distributor,
+        address alkesAddr,
+        uint indexed timestamp
+    );
 
-    function requestProduct(address distributor, address manufaktur, address packageAddr) public {
-        emit RequestEvent(distributor, manufaktur, packageAddr, block.timestamp);
+    function requestProduct(
+        address distributor,
+        address manufaktur,
+        address packageAddr
+    ) public {
+        emit RequestEvent(
+            distributor,
+            manufaktur,
+            packageAddr,
+            block.timestamp
+        );
     }
 
-    function izinRequest(address distributor, address kemenkes, address alkesAddr) public {
+    function izinRequest(
+        address distributor,
+        address kemenkes,
+        address alkesAddr
+    ) public {
         emit IzinEvent(distributor, kemenkes, alkesAddr, block.timestamp);
     }
 
-    function reqAlkesRs(address rs, address distributor, address alkesAddr) public {
+    function reqAlkesRs(
+        address rs,
+        address distributor,
+        address alkesAddr
+    ) public {
         emit RsEvent(rs, distributor, alkesAddr, block.timestamp);
     }
 
     function registerUser(
-        bytes32 name,
-        bytes32 email,
-        bytes32 noTelp,
+        bytes memory name,
+        bytes memory email,
+        bytes memory noTelp,
         uint8 role,
         address userAddr
     ) public onlyOwner {
@@ -84,33 +128,57 @@ contract SupplyChain {
     }
 
     mapping(address => address[]) public dataAlkesManufaktur;
+    // mapping(address => address[]) public dataGeneratedIds;
 
     function createAlkesManufaktur(
         SupplyChainAlkesDetails memory alkesDetails,
         address distributorAddr,
         address kemenkesAddr,
-        address rumahSakitAddr
-    ) public returns (address) {
-        bytes20 alkesId = bytes20(sha256(abi.encodePacked(msg.sender, block.timestamp)));
+        address rumahSakitAddr,
+        address pasieAddr
+        // DataGeneratedIdSupply[] memory generatedIds
+    )
+        public
+        returns (
+            // GeneratedIdsData memory generatedIds
+            address
+        )
+    {
+        bytes20 alkesId = bytes20(
+            sha256(abi.encodePacked(msg.sender, block.timestamp))
+        );
         RawAlkes alkes = new RawAlkes(
             msg.sender,
             address(alkesId),
             RawAlkes.AlkesDetails({
                 namaAlkes: alkesDetails.namaAlkes,
                 deskripsiAlkes: alkesDetails.deskripsiAlkes,
+                kategori_alkes: alkesDetails.kategori_alkes,
+                subkategori_alkes: alkesDetails.subkategori_alkes,
                 klasifikasiAlkes: alkesDetails.klasifikasiAlkes,
                 tipeAlkes: alkesDetails.tipeAlkes,
-                kelasAlkes: alkesDetails.kelasAlkes,
                 kelasResiko: alkesDetails.kelasResiko,
+                kuantitas: alkesDetails.kuantitas,
                 noIzinEdar: alkesDetails.noIzinEdar
             }),
             distributorAddr,
             kemenkesAddr,
-            rumahSakitAddr
+            rumahSakitAddr,
+            pasieAddr
         );
-
+        address alkesAddress = address(alkes);
         dataAlkesManufaktur[msg.sender].push(address(alkes));
-        return address(alkes);
+
+        // for (uint i = 0; i < generatedIds.length; i++) {
+        //     DataGeneratedId data = new DataGeneratedId(
+        //         alkesAddress,
+        //         generatedIds[i].id_produk,
+        //         alkesAddress
+        //     );
+        //     dataGeneratedIds[msg.sender].push(address(data));
+        // }
+
+        return address(alkesAddress);
     }
 
     function getNoOfPackagesOfSupplier() public view returns (uint) {
@@ -121,16 +189,41 @@ contract SupplyChain {
         return dataAlkesManufaktur[msg.sender];
     }
 
+    // function getAllId()
+    //     public
+    //     view
+    //     returns (address[] memory addr,address[] memory id_informasi, bytes[] memory id_produk)
+    // {
+    //     uint len = dataGeneratedIds[msg.sender].length;
+    //     addr = new address[](len);
+    //     id_informasi = new address[](len);
+    //     id_produk = new bytes[](len);
 
-       function getAllPackagesData()
+    //     for (uint i = 0; i < len; i++) {
+    //         address addrId = dataGeneratedIds[msg.sender][i];
+    //         DataGeneratedId data = DataGeneratedId(addrId);
+    //         // console.log(alkesNew);
+    //         addr[i]= addrId;
+    //         id_informasi[i] = data.getInformasi();
+    //         id_produk[i] = data.getProduk();
+    //     }
+
+    //     return (addr, id_informasi, id_produk);
+    // }
+
+    function getAllPackagesData()
         public
         view
-        returns (address[] memory retAddress, bytes32[] memory retNamaAlkes, bytes32[] memory retKlasifikasi)
+        returns (
+            address[] memory retAddress,
+            bytes[] memory retNamaAlkes,
+            bytes[] memory retKlasifikasi
+        )
     {
         uint len = dataAlkesManufaktur[msg.sender].length;
         retAddress = new address[](len);
-        retNamaAlkes = new bytes32[](len);
-        retKlasifikasi = new bytes32[](len);
+        retNamaAlkes = new bytes[](len);
+        retKlasifikasi = new bytes[](len);
 
         for (uint i = 0; i < len; i++) {
             address alkesAddr = dataAlkesManufaktur[msg.sender][i];

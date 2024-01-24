@@ -40,17 +40,21 @@ import Draggable from 'react-draggable';
 
 import Transactions from '../../build/Transactions.json';
 import RawAlkes from '../../build/RawAlkes.json';
+import DataGeneratedId from '../../build/DataGeneratedId.json';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import categories from './categories';
 import { v4 as uuidv4 } from 'uuid';
 import TabelGenerateId from './TableGenerateId';
+import prisma from '@/utils/prisma';
+import TabelModal from './TabelModal';
+import axios from 'axios';
 
 
 
 const TambahAlkes = ({ subtitle }) => {
-    console.log(categories);
+    // console.log(categories);
     const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain();
 
 
@@ -71,6 +75,7 @@ const TambahAlkes = ({ subtitle }) => {
     const [details, setDetails] = useState([]);
     const [user, setUser] = useState([]);
     const [arrayStatus, setArrayStatus] = useState([]);
+    const [alkesProducts, setAlkesProducts] = useState([]);
     const [addressResponse, setAddressResponse] = useState("");
     const [data, setData] = useState("");
     const [open, setOpen] = useState("");
@@ -117,7 +122,11 @@ const TambahAlkes = ({ subtitle }) => {
     const dataBlockchain = async () => {
         try {
             const abi = await supplyChain.methods.getAllPackagesData().call({ from: account })
-            console.log(abi);
+            // const allId = await supplyChain.methods.getAllId().call({ from: account })
+
+
+
+            // console.log(allId);
 
             return abi
 
@@ -197,6 +206,12 @@ const TambahAlkes = ({ subtitle }) => {
                 const rawMaterial = new web3.eth.Contract(RawAlkes.abi, addressResponse);
                 const fetchedData = await rawMaterial.methods.getRawAlkes().call({ from: account });
                 const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
+
+                // const blockchainDataId = new web3.eth.Contract(DataGeneratedId.abi, addressResponse);
+                // const DataId = await blockchainDataId.methods.getId().call({ from: account });
+
+
+                // console.log(DataId);
                 console.log(fetchedData);
 
                 const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
@@ -207,6 +222,32 @@ const TambahAlkes = ({ subtitle }) => {
                 const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
 
 
+                // const response = await fetch('/api/getAlkesProduct', {
+                //     method: 'POST',
+                //     body: JSON.stringify({ addressResponse }),
+                // });
+
+                // if (!response.ok) {
+                //     throw new Error('Error fetching AlkesProducts');
+                // }
+
+                // const products = await response.json();
+
+                // console.log(products);
+
+                // setAlkesProducts(products)
+
+                const response = await axios.post('/api/getAlkesProduct', {
+                    addressResponse: addressResponse,
+                });
+
+                console.log(response);
+                if (response.data.status === 200) {
+                    console.log(response.data.products);
+                    setAlkesProducts(response.data.products);
+                } else {
+                    throw new Error('Error fetching AlkesProducts');
+                }
 
 
                 setNamaAlkesFetch(nama)
@@ -255,7 +296,7 @@ const TambahAlkes = ({ subtitle }) => {
         console.log(e.target);
         if (e.target.name === 'klasifikasi') {
             setklasifikasi(e.target.value);
-        }  else if (e.target.name === 'kelas_resiko') {
+        } else if (e.target.name === 'kelas_resiko') {
             setkelas_resiko(e.target.value);
         }
 
@@ -264,33 +305,56 @@ const TambahAlkes = ({ subtitle }) => {
 
     const handleSubmit = async (e) => {
 
-        console.log(nama_alkes, deskripsi_alkes, klasifikasi, tipe_alkes, kelas, kelas_resiko);
+        const kategori_alkes = selectedCategory
+        const subkategori_alkes = selectedSubcategory;
+        const kuantitas = count.toString();
+
+        console.log(
+            nama_alkes,
+            deskripsi_alkes,
+            kategori_alkes,
+            subkategori_alkes,
+            klasifikasi,
+            tipe_alkes,
+            kelas_resiko,
+            kuantitas,
+            generatedIds,
+        );
         e.preventDefault();
         setLoadingSubmit(false);
 
         try {
 
 
-            const n = web3.utils.padRight(web3.utils.fromAscii(nama_alkes), 64);
-            const d = web3.utils.padRight(web3.utils.fromAscii(deskripsi_alkes), 64);
-            const c = web3.utils.padRight(web3.utils.fromAscii(klasifikasi), 64);
-            const t = web3.utils.padRight(web3.utils.fromAscii(tipe_alkes), 64);
-            const k = web3.utils.padRight(web3.utils.fromAscii(kelas), 64);
-            const kr = web3.utils.padRight(web3.utils.fromAscii(kelas_resiko), 64);
+
+            const n = web3.utils.fromAscii(nama_alkes).padEnd(128, '0');
+            const d = web3.utils.fromAscii(deskripsi_alkes).padEnd(128, '0');
+            const c = web3.utils.fromAscii(kategori_alkes).padEnd(128, '0');
+            const sub = web3.utils.fromAscii(subkategori_alkes).padEnd(128, '0');
+            const kla = web3.utils.fromAscii(klasifikasi).padEnd(128, '0');
+            const t = web3.utils.fromAscii(tipe_alkes).padEnd(128, '0');
+            const kr = web3.utils.fromAscii(kelas_resiko).padEnd(128, '0');
+            const kuan = web3.utils.fromAscii(kuantitas).padEnd(128, '0');
 
             const alkesDetails = {
                 namaAlkes: n,
                 deskripsiAlkes: d,
-                klasifikasiAlkes: c,
+                kategori_alkes: c,
+                subkategori_alkes: sub,
+                klasifikasiAlkes: kla,
                 tipeAlkes: t,
-                kelasAlkes: k,
-                kelasReseeiko: kr,
-                noIz2inEdar: kr
+                kelasResiko: kr,
+                kuantitas: kuan,
+                noIzinEdar: kr
             };
-            console.log(d);
-            console.log(t);
+
+            const arrayId = generatedIds.map(id => ({
+                // id_informasi: account, 
+                id_produk: web3.utils.fromAscii(id).padEnd(128, '0')
+            }));
+            // console.log(alkesDetails, arrayId);
             await supplyChain.methods
-                .createAlkesManufaktur(alkesDetails, account, account, account)
+                .createAlkesManufaktur(alkesDetails, account, account, account, account)
                 .send({ from: account })
                 .once('receipt', async (receipt) => {
                     setLoadingSubmit(true);
@@ -302,12 +366,34 @@ const TambahAlkes = ({ subtitle }) => {
                     const rawAlkes = new web3.eth.Contract(RawAlkes.abi, rawAlkesAddress);
                     const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
 
+
+                    // const getId = new web3.eth.Contract(DataGeneratedId.abi, rawAlkesAddress);
+                    // const dataId = await getId.methods.getId().call({ from: account });
+
+                    // console.log(dataId);
                     console.log(data[6]);
                     const txnContractAddress = data[6];
                     const txnHash = receipt.transactionHash;
                     const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
                     await transactions.methods.createTxnEntry(txnHash, account, rawAlkesAddress, txnHash).send({ from: account });
 
+
+                    let alkesAddr = rawAlkesAddress;
+                    const products = {
+                        alkesAddr,
+                        arrayId
+                    }
+                    const response = await fetch("/api/generatedID", {
+                        method: "POST",
+                        body: JSON.stringify(products)
+                    })
+
+                    // console.log(response);
+                    if (response.ok) {
+                        const result = await response.json();
+                    } else {
+                        console.error("Error:", response.statusText);
+                    }
                     window.location.reload();
                 });
 
@@ -318,12 +404,12 @@ const TambahAlkes = ({ subtitle }) => {
         }
     };
 
-    const handleSubmit2 = async (e) =>{
+    const handleSubmit2 = async (e) => {
 
         const kategori_alkes = selectedCategory
         const subkategori_alkes = selectedSubcategory;
         const kuantitas = count;
-        
+
         console.log(
             nama_alkes,
             deskripsi_alkes,
@@ -337,7 +423,7 @@ const TambahAlkes = ({ subtitle }) => {
         );
         e.preventDefault()
 
-        const data = { 
+        const data = {
             nama_alkes,
             deskripsi_alkes,
             kategori_alkes,
@@ -346,13 +432,18 @@ const TambahAlkes = ({ subtitle }) => {
             tipe_alkes,
             kelas_resiko,
             kuantitas,
-            generatedIds,        
+            generatedIds,
         }
 
         const response = await fetch("/api/informasiAlkes", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(data)
         })
+
+
     }
     if (loading) {
         return <Loader></Loader>;
@@ -452,9 +543,13 @@ const TambahAlkes = ({ subtitle }) => {
         console.log(data);
 
 
+
+
         return (
 
             <Dialog
+                fullWidth={true}
+                maxWidth={'lg'}
                 open={open}
                 onClose={handleClose}
                 PaperComponent={PaperComponent}
@@ -673,6 +768,8 @@ const TambahAlkes = ({ subtitle }) => {
 
                                             </tbody>
                                         </table>
+
+                                        <TabelModal alkesProducts={alkesProducts} />
                                     </div>
                                 </div>
 
@@ -917,7 +1014,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                 <div className='tab-pane fade' id='liton_tab_2'>
                                                     <div className="ltn__form-box contact-form-box box-shadow white-bg">
                                                         <h4 className="title-2">{subtitle}</h4>
-                                                        <form onSubmit={handleSubmit2}>
+                                                        <form onSubmit={handleSubmit}>
                                                             <div className="row">
                                                                 <div className="col-md-12">
                                                                     <div className="input-item input-item-name ltn__custom-icon">
@@ -1007,7 +1104,7 @@ const TambahAlkes = ({ subtitle }) => {
                                                                                     <MenuItem value={"elktromedik_non_radiasi"}>Elektromedik Non Radiasi</MenuItem>
                                                                                     <MenuItem value={"non_elktromedik_steril"}>Non Elektromedik Steril</MenuItem>
                                                                                     <MenuItem value={"non_elktromedik_non_steril"}>Non Elektromedik Non Steril</MenuItem>
-                                                                                    <MenuItem value={"diagnostic_invitro"}>Diagnostic Invitro</MenuItem>
+                                                                                    <MenuItem value={"diagnostic_invitro"}>Diagnostic In Vitro</MenuItem>
                                                                                 </Select>
                                                                             </FormControl>
                                                                         </Box>

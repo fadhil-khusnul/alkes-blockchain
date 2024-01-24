@@ -13,25 +13,37 @@ datasource db {
 // informasi_alkes.prisma
 
 model InformasiAlkes {
-  id             Int      @id @default(autoincrement())
-  nama_alkes     String
-  deskripsi_alkes String
-  kategori_alkes String
-  subkategori_alkes String
-  klasifikasi    String
-  tipe_alkes     String
-  kelas_resiko   String
-  kuantitas      Int
-  generatedIds   GeneratedIds[]
+  id                 Int            @id @default(autoincrement())
+  blockchain_address String
+  nama_alkes         String
+  deskripsi_alkes    String
+  kategori_alkes     String
+  subkategori_alkes  String
+  klasifikasi        String
+  tipe_alkes         String
+  kelas_resiko       String
+  kuantitas          Int
+  generatedIds       GeneratedIds[]
 
+  @@unique([blockchain_address])
 }
 
 model GeneratedIds {
-  id            Int       @id @default(autoincrement())
-  informasiAlkes InformasiAlkes @relation(fields: [informasiAlkesId], references: [id])
+  id               Int            @id @default(autoincrement())
+  informasiAlkes   InformasiAlkes @relation(fields: [informasiAlkesId], references: [id])
   informasiAlkesId Int
-  generatedId   String
+  alkesAddr        String         @map("blockchain_address")
+  generatedId      String
 
   @@unique([generatedId])
 }
 
+model AlkesProduct {
+  id          Int     @id @default(autoincrement())
+  alkesAddr   String
+  generatedId String
+  pasienAddr  String?
+  status      Boolean @default(false)
+
+  @@unique([generatedId])
+}
