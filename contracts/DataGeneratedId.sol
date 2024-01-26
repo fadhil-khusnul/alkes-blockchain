@@ -24,12 +24,11 @@ contract DataGeneratedId {
         return (id_informasi, id_produk);
     }
 
-     function getInformasi() public view returns (address) {
+    function getInformasi() public view returns (address) {
         return id_informasi;
     }
-     function getProduk() public view returns (bytes memory) {
+
+    function getProduk() public view returns (bytes memory) {
         return id_produk;
     }
-
-    
 }

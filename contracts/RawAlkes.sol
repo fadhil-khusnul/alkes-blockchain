@@ -28,7 +28,7 @@ contract RawAlkes {
     // struct DataGeneratedId {
     //     bytes id_informasi;
     //     bytes id_produk;
-        
+
     // }
 
     address public immutable productid;
@@ -37,6 +37,7 @@ contract RawAlkes {
     address public kemenkes;
     address public rumahSakit;
     address public pasien;
+    uint public creationTimestamp;
 
     AlkesDetails public alkesDetails;
     // DataGeneratedId public generatedIds;
@@ -50,8 +51,7 @@ contract RawAlkes {
         address _distributorAddr,
         address _kemenkesAddr,
         address _rumahSakitAddr,
-        address _pasienAddr
-        // DataGeneratedId memory _generatedIds
+        address _pasienAddr // DataGeneratedId memory _generatedIds
     ) {
         require(
             _creatorAddr != address(0) &&
@@ -75,6 +75,8 @@ contract RawAlkes {
         rumahSakit = _rumahSakitAddr;
         pasien = _pasienAddr;
         status = PackageStatus.AtManufacturer;
+				creationTimestamp = block.timestamp;
+
         initializeTxnContract(_distributorAddr);
     }
 
@@ -94,9 +96,11 @@ contract RawAlkes {
             address,
             address,
             address,
-            address
+            address,
+						uint
         )
     {
+
         return (
             productid,
             alkesDetails,
@@ -105,10 +109,13 @@ contract RawAlkes {
             kemenkes,
             rumahSakit,
             pasien,
-            txnContractAddress
+            txnContractAddress,
+						creationTimestamp
+						
         );
     }
 
+   
     function getNamaAlkes() public view returns (bytes memory) {
         return alkesDetails.namaAlkes;
     }

@@ -3,7 +3,7 @@ import Breadcumb from '@/components/Breadcumb'
 import Header from '@/components/Header'
 import MobileMenu from '@/components/MobileMenu'
 import OverlayMenu from '@/components/OverlayMenu'
-import RumahSakit from '@/components/RumahSakit/RumahSakit';
+import Pasien from '@/components/Pasien/Pasien';
 
 
 const Page = () => {
@@ -12,14 +12,14 @@ const Page = () => {
 
   return (
     <div>
-      <Header title={"Rumah Sakit"} />
-      <MobileMenu title={"Rumah Sakit"} />
+      <Header title={"Pasien"} />
+      <MobileMenu title={"Pasien"} />
 
       <OverlayMenu />
 
       <Breadcumb />
 
-      <RumahSakit />
+      <Pasien />
 
 
 

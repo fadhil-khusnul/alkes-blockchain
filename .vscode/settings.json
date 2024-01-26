@@ -1,4 +1,21 @@
 {
         "WillLuke.nextjs.addTypesOnSave": true,
-        "WillLuke.nextjs.hasPrompted": true
+        "WillLuke.nextjs.hasPrompted": true,
+        "workbench.tree.indent": 4,
+        "editor.detectIndentation": true,
+        "vetur.format.styleInitialIndent": false,
+        "editor.language.brackets": [
+
+        ],
+        "jupyter.interactiveWindow.viewColumn": "secondGroup",
+        "editor.wordWrap": "off",
+        "editor.tabSize": 2,
+        "editor.columnSelection": false,
+        "editor.fontSize": 14,
+        "php.format.rules.openBraceOnNewLineForNamespaces": true,
+        "editor.insertSpaces": true,
+        "typescript.workspaceSymbols.excludeLibrarySymbols": true,
+        "typescript.workspaceSymbols.scope": "currentProject",
+        "editor.wrappingIndent": "same",
+        "vetur.format.options.useTabs": false
 }

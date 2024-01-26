@@ -21,9 +21,9 @@ const SelectRole = () => {
                         <div className="ltn__slide-item-inner text-center">
                             <div className="container">
                                 <div className="row">
-                                    <div className="col-lg-12 align-self-center">
+                                    <div className="col-lg-12 align-self-center justify-content-center">
                                         <div className="slide-item-info" style={{ maxWidth: 1000 + 'px' }}>
-                                            <div className="slide-item-info-inner ltn__slide-animation row ltn__tab-product-slider-one-active--- slick-arrow-">
+                                            <div style={{ justifyContent: 'center' }} className="slide-item-info-inner ltn__slide-animation row ltn__tab-product-slider-one-active--- slick-arrow-">
                                                 <div className="slide-video mb-50 d-none">
                                                     <a className="ltn__video-icon-2 ltn__video-icon-2-border" href="https://www.youtube.com/embed/tlThdr3O5Qo" data-rel="lightcase:myCollection">
                                                         <i className="fa fa-play"></i>
@@ -31,7 +31,7 @@ const SelectRole = () => {
                                                 </div>
                                                 <h6 className="slide-sub-title white-color animated"><span><i className="fas fa-stethoscope"></i></span> Alat Kesehatan</h6>
                                                 <h1 className="slide-title white-color animated pb-50  ">Blockchain Alat Kesehatan</h1>
-                                                <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
+                                                <div className="col-lg-2 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 bg-overlay-white-50 text-center">
                                                         <div className="product-img">
                                                             <a target='_blank' href="/manufaktur"><img src="./img/manufaktur.png" alt="#" /></a>
@@ -58,7 +58,7 @@ const SelectRole = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
+                                                <div className="col-lg-2 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
                                                             <a target='_blank' href="/distributor"><img src="./img/distributor.png" alt="#" /></a>
@@ -85,7 +85,7 @@ const SelectRole = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
+                                                <div className="col-lg-2 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
                                                             <a target='_blank' href="/kemenkes"><img src="./img/kemenkes.png" alt="#" /></a>
@@ -112,10 +112,10 @@ const SelectRole = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-3 col-md-4 col-sm-6 col-6 animated">
+                                                <div className="col-lg-2 col-md-4 col-sm-6 col-6 animated">
                                                     <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
                                                         <div className="product-img">
-                                                            <a href="/rumah-sakit"><img src="./img/hospital.png" alt="#" /></a>
+                                                            <a href="/faskes"><img src="./img/hospital.png" alt="#" /></a>
                                                             <div className="product-badge">
                                                                 <ul>
                                                                     <li className="sale-badge">4</li>
@@ -124,7 +124,7 @@ const SelectRole = () => {
                                                             <div className="product-hover-action">
                                                                 <ul>
                                                                     <li>
-                                                                        <a href="/rumah-sakit" target='_blank' title="Rumah Sakit View">
+                                                                        <a href="/faskes" target='_blank' title="Rumah Sakit View">
                                                                             <i className="fas fa-external-link-alt"></i>
                                                                         </a>
                                                                     </li>
@@ -133,7 +133,32 @@ const SelectRole = () => {
                                                             </div>
                                                         </div>
                                                         <div className="product-info text-white">
-                                                            <h2 className="product-title text-white"><a href="/rumah-sakit" target='_blank'>Rumah Sakit</a></h2>
+                                                            <h2 className="product-title text-white"><a href="/faskes" target='_blank'>Faskes</a></h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-2 col-md-4 col-sm-6 col-6 animated">
+                                                    <div className="ltn__product-item ltn__product-item-3 text-center bg-overlay-white-50">
+                                                        <div className="product-img">
+                                                            <a href="/pasien"><img src="./img/pasien.png" alt="#" /></a>
+                                                            <div className="product-badge">
+                                                                <ul>
+                                                                    <li className="sale-badge">5</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div className="product-hover-action">
+                                                                <ul>
+                                                                    <li>
+                                                                        <a href="/pasien" target='_blank' title="Pasien View">
+                                                                            <i className="fas fa-external-link-alt"></i>
+                                                                        </a>
+                                                                    </li>
+
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div className="product-info text-white">
+                                                            <h2 className="product-title text-white"><a href="/pasien" target='_blank'>Pasien</a></h2>
                                                         </div>
                                                     </div>
                                                 </div>

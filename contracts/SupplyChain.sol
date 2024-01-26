@@ -71,6 +71,12 @@ contract SupplyChain {
         address alkesAddr,
         uint indexed timestamp
     );
+    event PasienEvent(
+        address pasien,
+        address indexed faskes,
+        address alkesAddr,
+        uint indexed timestamp
+    );
 
     function requestProduct(
         address distributor,
@@ -99,6 +105,14 @@ contract SupplyChain {
         address alkesAddr
     ) public {
         emit RsEvent(rs, distributor, alkesAddr, block.timestamp);
+    }
+
+    function reqAlkesPasien(
+        address pasien,
+        address faskes,
+        address alkesAddr
+    ) public {
+        emit PasienEvent(pasien, faskes, alkesAddr, block.timestamp);
     }
 
     function registerUser(

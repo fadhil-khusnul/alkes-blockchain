@@ -51,7 +51,7 @@ const Kemenkes = ({ subtitle }) => {
 
 
     console.log(loading, account, supplyChain);
-     //Modal dan Tabel Alkes
+    //Modal dan Tabel Alkes
     const [details, setDetails] = useState([]);
     const [user, setUser] = useState([]);
     const [arrayStatus, setArrayStatus] = useState([]);

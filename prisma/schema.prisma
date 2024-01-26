@@ -39,11 +39,13 @@ model GeneratedIds {
 }
 
 model AlkesProduct {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   alkesAddr   String
   generatedId String
   pasienAddr  String?
-  status      Boolean @default(false)
+  status      Boolean  @default(false)
+  createdAt   DateTime?
+  updatedAt   DateTime?
 
   @@unique([generatedId])
 }

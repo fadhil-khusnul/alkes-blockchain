@@ -5,35 +5,35 @@ import useBlockchain from '@/utils/useBlockchain';
 
 
 import {
-    Alert,
-    Box,
-    Button,
-    Collapse,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    FormControl,
-    Grow,
-    IconButton,
-    InputLabel,
-    LinearProgress,
-    MenuItem,
-    Paper,
-    Select,
-    Stack,
-    Step,
-    StepLabel,
-    Stepper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography,
+  Alert,
+  Box,
+  Button,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  Grow,
+  IconButton,
+  InputLabel,
+  LinearProgress,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { Check, Delete as DeleteIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon, Launch, Settings, Visibility } from '@mui/icons-material';
 import Draggable from 'react-draggable';
@@ -50,1225 +50,869 @@ import TabelGenerateId from './TableGenerateId';
 import prisma from '@/utils/prisma';
 import TabelModal from './TabelModal';
 import axios from 'axios';
+import ModalDetailAlkes from '../Data/ModalDetailAlkes';
 
 
 
 const TambahAlkes = ({ subtitle }) => {
-    // console.log(categories);
-    const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain();
+  const { account, loading, supplyChain, web3, handleInputChange } = useBlockchain()
+  console.log(loading, account, supplyChain);
+  const [nama_alkes, setnama_alkes] = useState("");
+  const [deskripsi_alkes, setdeskripsi_alkes] = useState("");
+  const [klasifikasi, setklasifikasi] = useState("");
+  const [tipe_alkes, settipe_alkes] = useState("");
+  const [kelas, setkelas] = useState("");
+  const [kelas_resiko, setkelas_resiko] = useState("");
+  const [kuantitas, setKuantitas] = useState("");
+  const [loadingSubmit, setLoadingSubmit] = useState(loading);
+  const [dataAlkes, setAlkes] = useState([])
+
+  //Modal dan Tabel Alkes
+  const [details, setDetails] = useState([]);
+  const [user, setUser] = useState([]);
+  const [arrayStatus, setArrayStatus] = useState([]);
+  const [alkesProducts, setAlkesProducts] = useState([]);
+  const [addressResponse, setAddressResponse] = useState("");
+  const [data, setData] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const [status, setStatus] = useState(0);
+  const [namaAlkes, setNamaAlkesFetch] = useState("");
+  const [klasifikasiAlkes, setklasifikasiAlkes] = useState("");
+  const [tipeAlkes, settipeAlkes] = useState("");
+  const [kelasAlkes, setkelasAlkes] = useState("");
+  const [kelasResiko, setkelasResiko] = useState("");
+  const [izinEdar, setIzinEdar] = useState("");
+
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+
+  const addressPackage = useRef();
+
+
+  const [count, setCount] = useState(1);
+
+  const [generatedIds, setGeneratedIds] = useState([]);
+
+  const handleGenerateIds = () => {
+    const newIds = Array.from({ length: count }, () => uuidv4());
+    setGeneratedIds(newIds);
+  };
+
+  const handleCountChange = (e) => {
+    const newCount = parseInt(e.target.value, 10) || 1;
+    setCount(newCount);
+  };
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setSelectedSubcategory('');
+  };
+
+  const handleSubcategoryChange = (e) => {
+    setSelectedSubcategory(e.target.value);
+  };
+
+  const subcategoriesOptions = selectedCategory && categories.find((item) => item.category === selectedCategory)?.subcategories;
+
+
+  const dataBlockchain = async () => {
+    try {
+      const abi = await supplyChain.methods.getAllPackagesData().call({ from: account })
+      // const allId = await supplyChain.methods.getAllId().call({ from: account })
 
 
 
+      // console.log(allId);
 
-    console.log(loading, account, supplyChain);
-    const [nama_alkes, setnama_alkes] = useState("");
-    const [deskripsi_alkes, setdeskripsi_alkes] = useState("");
-    const [klasifikasi, setklasifikasi] = useState("");
-    const [tipe_alkes, settipe_alkes] = useState("");
-    const [kelas, setkelas] = useState("");
-    const [kelas_resiko, setkelas_resiko] = useState("");
-    const [kuantitas, setKuantitas] = useState("");
-    const [loadingSubmit, setLoadingSubmit] = useState(loading);
-    const [dataAlkes, setAlkes] = useState([])
+      return abi
 
-    //Modal dan Tabel Alkes
-    const [details, setDetails] = useState([]);
-    const [user, setUser] = useState([]);
-    const [arrayStatus, setArrayStatus] = useState([]);
-    const [alkesProducts, setAlkesProducts] = useState([]);
-    const [addressResponse, setAddressResponse] = useState("");
-    const [data, setData] = useState("");
-    const [open, setOpen] = useState("");
+    } catch (error) {
+      console.error('Error:', error);
+      throw error
+    }
+  }
+  const dataResponse = async () => {
+    try {
+      let events = await supplyChain.getPastEvents('RequestEvent', { filter: { manufaktur: account }, fromBlock: 0, toBlock: 'latest' });
+      console.log(events);
 
-    const [status, setStatus] = useState(0);
-    const [namaAlkes, setNamaAlkesFetch] = useState("");
-    const [klasifikasiAlkes, setklasifikasiAlkes] = useState("");
-    const [tipeAlkes, settipeAlkes] = useState("");
-    const [kelasAlkes, setkelasAlkes] = useState("");
-    const [kelasResiko, setkelasResiko] = useState("");
-    const [izinEdar, setIzinEdar] = useState("");
+      events = events.filter((event) => {
+        return event.returnValues.manufaktur === account;
+      });
 
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedSubcategory, setSelectedSubcategory] = useState('');
+      console.log(events);
 
-    const addressPackage = useRef();
+      return events
+
+    } catch (error) {
+      console.error('Error:', error);
+      throw error
+    }
+  }
 
 
-    const [count, setCount] = useState(1);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await dataBlockchain();
 
-    const [generatedIds, setGeneratedIds] = useState([]);
+        const responseAlkes = await dataResponse()
 
-    const handleGenerateIds = () => {
-        const newIds = Array.from({ length: count }, () => uuidv4());
-        setGeneratedIds(newIds);
+        const listUser = await Promise.all(
+          responseAlkes.map(async (user) => {
+            const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.manufaktur).call()
+            console.log(dataUser);
+            return dataUser
+          })
+        )
+
+        const infoAlkes = await Promise.all(
+          responseAlkes.map(async (alkes) => {
+            const rawMaterial = new web3.eth.Contract(RawAlkes.abi, alkes.returnValues.alkesAddr);
+
+            const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
+            console.log(fetchedStatus);
+            return fetchedStatus
+          })
+        )
+
+        console.log(infoAlkes);
+        console.log(listUser);
+
+        setAlkes(res);
+
+        setUser(listUser)
+
+        setArrayStatus(infoAlkes)
+
+        setDetails(responseAlkes);
+
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
-    const handleCountChange = (e) => {
-        const newCount = parseInt(e.target.value, 10) || 1;
-        setCount(newCount);
-    };
-    const handleCategoryChange = (e) => {
-        setSelectedCategory(e.target.value);
-        setSelectedSubcategory('');
-    };
+    fetchData();
+  }, [account, web3, supplyChain])
 
-    const handleSubcategoryChange = (e) => {
-        setSelectedSubcategory(e.target.value);
-    };
-
-    const subcategoriesOptions = selectedCategory && categories.find((item) => item.category === selectedCategory)?.subcategories;
-
-
-    const dataBlockchain = async () => {
-        try {
-            const abi = await supplyChain.methods.getAllPackagesData().call({ from: account })
-            // const allId = await supplyChain.methods.getAllId().call({ from: account })
+ 
 
 
 
-            // console.log(allId);
 
-            return abi
+  if (Object.keys(dataAlkes).length === 0) {
+    return null;
+  }
 
-        } catch (error) {
-            console.error('Error:', error);
-            throw error
-        }
-    }
-    const dataResponse = async () => {
-        try {
-            let events = await supplyChain.getPastEvents('RequestEvent', { filter: { manufaktur: account }, fromBlock: 0, toBlock: 'latest' });
-            console.log(events);
+  const getAllData = Object.keys(dataAlkes[0]).map((i) => ({
+    address: dataAlkes[0][i],
+    namAlkes: dataAlkes[1][i],
+    tipeAlkes: dataAlkes[2][i],
+  }));
 
-            events = events.filter((event) => {
-                return event.returnValues.manufaktur === account;
-            });
 
-            console.log(events);
-
-            return events
-
-        } catch (error) {
-            console.error('Error:', error);
-            throw error
-        }
+  const handleInputChangeForm = (e) => {
+    if (e.target.id === 'nama_alkes') {
+      setnama_alkes(e.target.value);
+    } else if (e.target.id === 'deskripsi_alkes') {
+      setdeskripsi_alkes(e.target.value);
+    } else if (e.target.id === 'tipe_alkes') {
+      settipe_alkes(e.target.value);
     }
 
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await dataBlockchain();
-
-                const responseAlkes = await dataResponse()
-
-                const listUser = await Promise.all(
-                    responseAlkes.map(async (user) => {
-                        const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.manufaktur).call()
-                        console.log(dataUser);
-                        return dataUser
-                    })
-                )
-
-                const infoAlkes = await Promise.all(
-                    responseAlkes.map(async (alkes) => {
-                        const rawMaterial = new web3.eth.Contract(RawAlkes.abi, alkes.returnValues.alkesAddr);
-
-                        const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
-                        console.log(fetchedStatus);
-                        return fetchedStatus
-                    })
-                )
-
-                console.log(infoAlkes);
-                console.log(listUser);
-
-                setAlkes(res);
-
-                setUser(listUser)
-
-                setArrayStatus(infoAlkes)
-
-                setDetails(responseAlkes);
-
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchData();
-    }, [account, web3, supplyChain])
-
-    useEffect(() => {
-        const fetchDataDetails = async () => {
-            try {
-                const rawMaterial = new web3.eth.Contract(RawAlkes.abi, addressResponse);
-                const fetchedData = await rawMaterial.methods.getRawAlkes().call({ from: account });
-                const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
-
-                // const blockchainDataId = new web3.eth.Contract(DataGeneratedId.abi, addressResponse);
-                // const DataId = await blockchainDataId.methods.getId().call({ from: account });
-
-
-                // console.log(DataId);
-                console.log(fetchedData);
-
-                const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
-                const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
-                const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
-                const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
-                const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
-                const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
-
-
-                // const response = await fetch('/api/getAlkesProduct', {
-                //     method: 'POST',
-                //     body: JSON.stringify({ addressResponse }),
-                // });
-
-                // if (!response.ok) {
-                //     throw new Error('Error fetching AlkesProducts');
-                // }
-
-                // const products = await response.json();
-
-                // console.log(products);
-
-                // setAlkesProducts(products)
-
-                const response = await axios.post('/api/getAlkesProduct', {
-                    addressResponse: addressResponse,
-                });
-
-                console.log(response);
-                if (response.data.status === 200) {
-                    console.log(response.data.products);
-                    setAlkesProducts(response.data.products);
-                } else {
-                    throw new Error('Error fetching AlkesProducts');
-                }
-
-
-                setNamaAlkesFetch(nama)
-                setklasifikasiAlkes(klasifikasi)
-                settipeAlkes(tipe)
-                setkelasAlkes(kelas)
-                setkelasResiko(kelas_resiko)
-                setIzinEdar(izin_edar)
-                setData(fetchedData)
-                setStatus(fetchedStatus);
-            } catch (error) {
-                console.error("Error", error);
-            }
-        };
-
-        fetchDataDetails();
-
-    }, [addressResponse, account]);
-
-
-
-    console.log(dataAlkes);
-
-    if (Object.keys(dataAlkes).length === 0) {
-        return null;
+  }
+  const handleSelectChangeForm = (e) => {
+    console.log(e.target);
+    if (e.target.name === 'klasifikasi') {
+      setklasifikasi(e.target.value);
+    } else if (e.target.name === 'kelas_resiko') {
+      setkelas_resiko(e.target.value);
     }
 
-    const getAllData = Object.keys(dataAlkes[0]).map((i) => ({
-        address: dataAlkes[0][i],
-        namAlkes: dataAlkes[1][i],
-        tipeAlkes: dataAlkes[2][i],
-    }));
+  }
 
 
-    const handleInputChangeForm = (e) => {
-        if (e.target.id === 'nama_alkes') {
-            setnama_alkes(e.target.value);
-        } else if (e.target.id === 'deskripsi_alkes') {
-            setdeskripsi_alkes(e.target.value);
-        } else if (e.target.id === 'tipe_alkes') {
-            settipe_alkes(e.target.value);
-        }
+  const handleSubmit = async (e) => {
 
-    }
-    const handleSelectChangeForm = (e) => {
-        console.log(e.target);
-        if (e.target.name === 'klasifikasi') {
-            setklasifikasi(e.target.value);
-        } else if (e.target.name === 'kelas_resiko') {
-            setkelas_resiko(e.target.value);
-        }
+    const kategori_alkes = selectedCategory
+    const subkategori_alkes = selectedSubcategory;
+    const kuantitas = count.toString();
 
-    }
+    console.log(
+      nama_alkes,
+      deskripsi_alkes,
+      kategori_alkes,
+      subkategori_alkes,
+      klasifikasi,
+      tipe_alkes,
+      kelas_resiko,
+      kuantitas,
+      generatedIds,
+    );
+    e.preventDefault();
+    setLoadingSubmit(false);
 
-
-    const handleSubmit = async (e) => {
-
-        const kategori_alkes = selectedCategory
-        const subkategori_alkes = selectedSubcategory;
-        const kuantitas = count.toString();
-
-        console.log(
-            nama_alkes,
-            deskripsi_alkes,
-            kategori_alkes,
-            subkategori_alkes,
-            klasifikasi,
-            tipe_alkes,
-            kelas_resiko,
-            kuantitas,
-            generatedIds,
-        );
-        e.preventDefault();
-        setLoadingSubmit(false);
-
-        try {
+    try {
 
 
 
-            const n = web3.utils.fromAscii(nama_alkes).padEnd(128, '0');
-            const d = web3.utils.fromAscii(deskripsi_alkes).padEnd(128, '0');
-            const c = web3.utils.fromAscii(kategori_alkes).padEnd(128, '0');
-            const sub = web3.utils.fromAscii(subkategori_alkes).padEnd(128, '0');
-            const kla = web3.utils.fromAscii(klasifikasi).padEnd(128, '0');
-            const t = web3.utils.fromAscii(tipe_alkes).padEnd(128, '0');
-            const kr = web3.utils.fromAscii(kelas_resiko).padEnd(128, '0');
-            const kuan = web3.utils.fromAscii(kuantitas).padEnd(128, '0');
+      const n = web3.utils.fromAscii(nama_alkes).padEnd(128, '0');
+      const d = web3.utils.fromAscii(deskripsi_alkes).padEnd(128, '0');
+      const c = web3.utils.fromAscii(kategori_alkes).padEnd(128, '0');
+      const sub = web3.utils.fromAscii(subkategori_alkes).padEnd(128, '0');
+      const kla = web3.utils.fromAscii(klasifikasi).padEnd(128, '0');
+      const t = web3.utils.fromAscii(tipe_alkes).padEnd(128, '0');
+      const kr = web3.utils.fromAscii(kelas_resiko).padEnd(128, '0');
+      const kuan = web3.utils.fromAscii(kuantitas).padEnd(128, '0');
 
-            const alkesDetails = {
-                namaAlkes: n,
-                deskripsiAlkes: d,
-                kategori_alkes: c,
-                subkategori_alkes: sub,
-                klasifikasiAlkes: kla,
-                tipeAlkes: t,
-                kelasResiko: kr,
-                kuantitas: kuan,
-                noIzinEdar: kr
-            };
+      const alkesDetails = {
+        namaAlkes: n,
+        deskripsiAlkes: d,
+        kategori_alkes: c,
+        subkategori_alkes: sub,
+        klasifikasiAlkes: kla,
+        tipeAlkes: t,
+        kelasResiko: kr,
+        kuantitas: kuan,
+        noIzinEdar: kr
+      };
 
-            const arrayId = generatedIds.map(id => ({
-                // id_informasi: account, 
-                id_produk: web3.utils.fromAscii(id).padEnd(128, '0')
-            }));
-            // console.log(alkesDetails, arrayId);
-            await supplyChain.methods
-                .createAlkesManufaktur(alkesDetails, account, account, account, account)
-                .send({ from: account })
-                .once('receipt', async (receipt) => {
-                    setLoadingSubmit(true);
+      const arrayId = generatedIds.map(id => ({
+        // id_informasi: account, 
+        id_produk: web3.utils.fromAscii(id).padEnd(128, '0')
+      }));
+      // console.log(alkesDetails, arrayId);
+      await supplyChain.methods
+        .createAlkesManufaktur(alkesDetails, account, account, account, account)
+        .send({ from: account })
+        .once('receipt', async (receipt) => {
+          setLoadingSubmit(true);
 
-                    console.log(receipt);
-                    var rawAlkesAddresses = await supplyChain.methods.getAllPackages().call({ from: account });
-                    let rawAlkesAddress = rawAlkesAddresses[rawAlkesAddresses.length - 1];
-                    console.log(rawAlkesAddress);
-                    const rawAlkes = new web3.eth.Contract(RawAlkes.abi, rawAlkesAddress);
-                    const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
-
-
-                    // const getId = new web3.eth.Contract(DataGeneratedId.abi, rawAlkesAddress);
-                    // const dataId = await getId.methods.getId().call({ from: account });
-
-                    // console.log(dataId);
-                    console.log(data[6]);
-                    const txnContractAddress = data[6];
-                    const txnHash = receipt.transactionHash;
-                    const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
-                    await transactions.methods.createTxnEntry(txnHash, account, rawAlkesAddress, txnHash).send({ from: account });
+          console.log(receipt);
+          var rawAlkesAddresses = await supplyChain.methods.getAllPackages().call({ from: account });
+          let rawAlkesAddress = rawAlkesAddresses[rawAlkesAddresses.length - 1];
+          console.log(rawAlkesAddress);
+          const rawAlkes = new web3.eth.Contract(RawAlkes.abi, rawAlkesAddress);
+          const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
 
 
-                    let alkesAddr = rawAlkesAddress;
-                    const products = {
-                        alkesAddr,
-                        arrayId
-                    }
-                    const response = await fetch("/api/generatedID", {
-                        method: "POST",
-                        body: JSON.stringify(products)
-                    })
+          // const getId = new web3.eth.Contract(DataGeneratedId.abi, rawAlkesAddress);
+          // const dataId = await getId.methods.getId().call({ from: account });
 
-                    // console.log(response);
-                    if (response.ok) {
-                        const result = await response.json();
-                    } else {
-                        console.error("Error:", response.statusText);
-                    }
-                    window.location.reload();
-                });
+          // console.log(dataId);
+          console.log(data);
+          const txnContractAddress = data[6];
+          const txnHash = receipt.transactionHash;
+          const transactions = new web3.eth.Contract(Transactions.abi, txnContractAddress);
+          await transactions.methods.createTxnEntry(txnHash, account, rawAlkesAddress, txnHash).send({ from: account });
 
+          const time = parseInt(data[8]);
 
-        } catch (error) {
-            console.error('Error:', error);
-            setLoadingSubmit(false);
-        }
-    };
+          console.log(time);
 
-    const handleSubmit2 = async (e) => {
-
-        const kategori_alkes = selectedCategory
-        const subkategori_alkes = selectedSubcategory;
-        const kuantitas = count;
-
-        console.log(
-            nama_alkes,
-            deskripsi_alkes,
-            kategori_alkes,
-            subkategori_alkes,
-            klasifikasi,
-            tipe_alkes,
-            kelas_resiko,
-            kuantitas,
-            generatedIds,
-        );
-        e.preventDefault()
-
-        const data = {
-            nama_alkes,
-            deskripsi_alkes,
-            kategori_alkes,
-            subkategori_alkes,
-            klasifikasi,
-            tipe_alkes,
-            kelas_resiko,
-            kuantitas,
-            generatedIds,
-        }
-
-        const response = await fetch("/api/informasiAlkes", {
+          let alkesAddr = rawAlkesAddress;
+          const products = {
+            alkesAddr,
+            arrayId,
+            time
+          }
+          const response = await fetch("/api/generatedID", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
+            body: JSON.stringify(products)
+          })
+
+          // console.log(response);
+          if (response.ok) {
+            const result = await response.json();
+          } else {
+            console.error("Error:", response.statusText);
+          }
+          window.location.reload();
+        });
 
 
+    } catch (error) {
+      console.error('Error:', error);
+      setLoadingSubmit(false);
     }
-    if (loading) {
-        return <Loader></Loader>;
-    }
+  };
 
+  const handleSubmit2 = async (e) => {
 
-    const stylesSelect = {
-        color: "#5C727D",
-        paddingBottom: "2em",
-        borderRadius: "0",
-        '& label.Mui-focused': {
-            color: '#4ab2d3',
-        },
-        '& .MuiInput-underline:after': {
-            borderBottomColor: '#4ab2d3',
-        },
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: '#e4ecf2',
-            },
-            '&:hover fieldset': {
-                borderColor: '#4ab2d3',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#4ab2d3',
-            },
-        },
+    const kategori_alkes = selectedCategory
+    const subkategori_alkes = selectedSubcategory;
+    const kuantitas = count;
 
-    }
+    console.log(
+      nama_alkes,
+      deskripsi_alkes,
+      kategori_alkes,
+      subkategori_alkes,
+      klasifikasi,
+      tipe_alkes,
+      kelas_resiko,
+      kuantitas,
+      generatedIds,
+    );
+    e.preventDefault()
 
-    const PaperComponent = (props) => {
-        return (
-            <Draggable
-                handle="#draggable-dialog-title"
-                cancel={'[class*="MuiDialogContent-root"]'}
-            >
-                <Paper {...props} />
-            </Draggable>
-        );
-    }
-
-    const handleClickOpen = (address) => {
-        setAddressResponse(address);
-        setOpen(true);
-    };
-
-    const handleClickOpenList = (address) => {
-        setAddressResponse(address);
-        setOpen(true);
-    };
-    const handleClickOpenAccept = () => {
-        setAddressResponse(addressPackage.current.value);
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleAccept = async (addressPackage, addressBuyer) => {
-        console.log(addressPackage, addressBuyer, account);
-
-        try {
-
-            const rawAlkes = new web3.eth.Contract(RawAlkes.abi, addressPackage);
-            rawAlkes.methods.updatedistributorAddress(addressBuyer).send({ from: account })
-                .once('receipt', async (receipt) => {
-                    console.log(receipt);
-                    window.location.reload()
-
-                });
-
-        } catch (error) {
-            console.error('Error:', error);
-            throw error
-
-        }
-
+    const data = {
+      nama_alkes,
+      deskripsi_alkes,
+      kategori_alkes,
+      subkategori_alkes,
+      klasifikasi,
+      tipe_alkes,
+      kelas_resiko,
+      kuantitas,
+      generatedIds,
     }
 
-    const ModalDetailAlkes = () => {
-
-        console.log(status);
-
-        const active = Number(status)
-
-
-
-        const steps = [
-            'Manufaktur',
-            'Distributor',
-            'Kemenkes',
-            'Rumah Sakit',
-
-        ];
-        console.log(addressResponse);
-        console.log(data);
+    const response = await fetch("/api/informasiAlkes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data)
+    })
 
 
+  }
+  if (loading) {
+    return <Loader></Loader>;
+  }
 
 
-        return (
+  const stylesSelect = {
+    color: "#5C727D",
+    paddingBottom: "2em",
+    borderRadius: "0",
+    '& label.Mui-focused': {
+      color: '#4ab2d3',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: '#4ab2d3',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#e4ecf2',
+      },
+      '&:hover fieldset': {
+        borderColor: '#4ab2d3',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#4ab2d3',
+      },
+    },
 
-            <Dialog
-                fullWidth={true}
-                maxWidth={'lg'}
-                open={open}
-                onClose={handleClose}
-                PaperComponent={PaperComponent}
-                aria-labelledby="draggable-dialog-title"
-            >
-
-
-                <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                    <div className='text-center'>
-
-                        <i className="fas fa-stethoscope"></i>
-                    </div>
-                </DialogTitle>
-
-                <DialogContent>
-
-                    <DialogContentText>
-                        <div className="ltn__team-details-member-info-details">
-                            <div className="row">
-                                <div className="col-lg-12">
-                                    <div className="ltn__team-details-member-about">
-                                        <table>
-                                            <tbody valign="top">
-                                                <tr>
-                                                    <td width={40}>
-                                                        <strong>
-
-                                                            Blockchain
-                                                        </strong>
-                                                    </td>
-                                                    <td width={10}>
-                                                        :
-                                                    </td>
-                                                    <td width={50}>
-                                                        {addressResponse}
-
-                                                    </td>
-
-                                                </tr>
-
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Nama
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {namaAlkes}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Klasifikasi
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {klasifikasiAlkes}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Tipe
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {tipeAlkes}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Kelas
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {kelasAlkes}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Kelas Resiko
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {kelasResiko}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            No. Izin Edar
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {
-                                                            izinEdar != kelasResiko ? izinEdar : "-"
-                                                        }
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Manufaktur
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {data[2]}
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Distributor
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {
-                                                            data[3] != data[2]
-                                                                ?
-                                                                data[3]
-                                                                :
-                                                                "-"
-                                                        }
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            Kemenkes
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {
-                                                            data[4] != data[2]
-                                                                ?
-                                                                data[4]
-                                                                :
-
-                                                                "-"
-
-                                                        }
-
-
-                                                    </td>
-
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <strong>
-                                                            RS
-                                                        </strong>
-                                                    </td>
-                                                    <td>
-                                                        :
-                                                    </td>
-                                                    <td>
-                                                        {
-                                                            data[5] != data[2]
-                                                                ?
-                                                                data[5]
-                                                                :
-
-                                                                "-"
-
-                                                        }
-
-                                                    </td>
-
-                                                </tr>
-
-                                            </tbody>
-                                        </table>
-
-                                        <TabelModal alkesProducts={alkesProducts} />
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div className='mt-20 mb-20 text-center'>
-                            <strong>
-
-                                Progress
-                            </strong>
-                        </div>
+  }
 
 
 
+  const handleClickOpen = (address) => {
+    console.log(address);
+    setAddressResponse(address);
+    setOpen(true);
+  };
 
-                        <Box sx={{ width: '100%' }}>
-                            <Stepper activeStep={active + 1} alternativeLabel>
-                                {steps.map((label) => (
-                                    <Step key={label}>
-                                        <StepLabel>{label}</StepLabel>
-                                    </Step>
-                                ))}
-                            </Stepper>
-                        </Box>
+  const handleClickOpenList = (address) => {
+    console.log(address);
+    setAddressResponse(address);
+    setOpen(true);
+  };
+ 
 
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button ariant="outlined" color="error" autoFocus onClick={handleClose}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
+  const handleAccept = async (addressPackage, addressBuyer) => {
+    console.log(addressPackage, addressBuyer, account);
 
+    try {
 
-        )
+      const rawAlkes = new web3.eth.Contract(RawAlkes.abi, addressPackage);
+      rawAlkes.methods.updatedistributorAddress(addressBuyer).send({ from: account })
+        .once('receipt', async (receipt) => {
+          console.log(receipt);
+          window.location.reload()
 
+        });
 
-
+    } catch (error) {
+      console.error('Error:', error);
+      throw error
 
     }
 
-
-
-    const DataAlkes = () => {
-        return (
-            <TableContainer component={Paper}>
-                <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell><strong>  Address Alkes (Blockchain) </strong></TableCell>
-                            <TableCell align="right"><strong>ManuFaktur</strong></TableCell>
-
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-
-                        {
-                            details?.map((alkes, index) => (
-                                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} details={details} user={user} arrayStatus={arrayStatus} web3={web3} index={index} />
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-        )
-    }
-
-
-    const Row = ({ alkes, user, web3, index, arrayStatus }) => {
-
-        console.log(alkes);
-        console.log(arrayStatus);
-        console.log(user);
-        // const { row } = props;
-        const [open, setOpen] = useState(false);
-
-        return (
-            <React.Fragment>
-                <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell>
-                        <IconButton
-                            aria-label="expand row"
-                            size="small"
-                            onClick={() => setOpen(!open)}
-                        >
-                            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                    </TableCell>
-
-
-                    <TableCell component="th" scope="row">
-                        {alkes.returnValues.alkesAddr}
-                    </TableCell>
-
-                    {user[index].userAddr === alkes.returnValues.manufaktur
-                        ?
-
-                        <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
-                        </TableCell>
-                        :
-                        <TableCell align='right'>{alkes.returnValues.manufaktur}</TableCell>
-
-                    }
-
-                </TableRow>
-                <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
-                            <Box sx={{ margin: 1 }}>
-                                <Typography variant="h6" gutterBottom component="div">
-                                    Details :
-                                </Typography>
-                                <Table size="small" aria-label="purchases">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Distributor Address</TableCell>
-                                            <TableCell>Date</TableCell>
-                                            <TableCell>Status</TableCell>
-                                            <TableCell />
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-
-                                        <TableCell>{alkes.returnValues.distributor}</TableCell>
-                                        <TableCell>{new Date(alkes.returnValues.timestamp * 1000).toString()}</TableCell>
-                                        <TableCell>
-                                            {
-                                                Number(arrayStatus[index]) < 1
-                                                    ?
-                                                    "Delay" :
-                                                    "Approve"
-                                            }
-                                        </TableCell>
-                                        <TableCell align='center'>
-                                            <IconButton onClick={() => handleClickOpen(alkes.returnValues.alkesAddr)}>
-                                                <Visibility />
-                                            </IconButton>
-                                            {
-                                                Number(arrayStatus[index]) < 1 &&
-                                                <IconButton onClick={() => handleAccept(alkes.returnValues.alkesAddr, alkes.returnValues.distributor)} >
-                                                    <Check />
-                                                </IconButton>
-                                            }
-                                        </TableCell>
-
-
-                                    </TableBody>
-                                </Table>
-                            </Box>
-                        </Collapse>
-                    </TableCell>
-                </TableRow>
-            </React.Fragment>
-        );
-    }
-
-
-    const DataAlkesComp = () => {
-        return (
-            <ul>
-                {
-                    getAllData?.map((alkes, index) => {
-                        return (
-                            <li key={alkes.address}>
-
-                                <div className="top-rated-product-item clearfix">
-                                    <div className="top-rated-product-img">
-                                        <i className="fas fa-stethoscope"></i>
-
-                                    </div>
-                                    <div className="top-rated-product-info">
-                                        <h2 className='product-title'>
-                                            {web3.utils.hexToUtf8(alkes.namAlkes).trim()}
-                                            <button type='button' className='btn btn-icon px-1 py-1' onClick={() => handleClickOpenList(alkes.address)}>
-                                                <i className='fas fa-external-link-alt'></i>
-                                            </button>
+  }
 
 
 
 
-                                        </h2>
-                                        <div className="product-price">
-                                            <span>{alkes.address}</span>
-                                        </div>
-                                        <div className="product-brief">
-                                            <h6>{web3.utils.hexToUtf8(alkes.tipeAlkes).trim()}</h6>
 
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </li>
-                        )
-
-
-                    })
-                }
-            </ul>
-
-
-
-        )
-
-    }
-
-
-    // fetchData();
+  const DataAlkes = () => {
     return (
-        <>
-            <div className="liton__wishlist-area pb-70">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 mb-50">
-                            <div className="ltn__product-tab-area">
-                                <div className="container">
-                                    <div className="row">
-                                        <div className="col-lg-4">
-                                            <div className="ltn__tab-menu-list mb-50">
-                                                <div className="nav">
-                                                    <a className="active show" data-bs-toggle="tab" href="#liton_tab_1">Dashboard <i className="fas fa-home"></i></a>
-                                                    <a data-bs-toggle="tab" href="#liton_tab_2">Tambah Alkes <i className="fas fa-arrow-right"></i></a>
-                                                    <a data-bs-toggle="tab" href="#liton_tab_3">Alkes <i className="fas fa-stethoscope"></i></a>
-                                                    <a data-bs-toggle="tab" href="#liton_tab_4">Response <i className="fas fa-arrow-left"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-8">
-                                            <div className="tab-content">
-                                                <div className="tab-pane fade active show" id="liton_tab_1">
-                                                    <div className="ltn__myaccount-tab-content-inner">
-                                                        <p>Blockchain Address : <strong>{account}</strong>
+      <TableContainer component={Paper}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell><strong>  Address Alkes (Blockchain) </strong></TableCell>
+              <TableCell align="right"><strong>ManuFaktur</strong></TableCell>
 
-                                                        </p>
-                                                    </div>
-                                                </div>
+            </TableRow>
+          </TableHead>
+          <TableBody>
 
-                                                <div className='tab-pane fade' id='liton_tab_2'>
-                                                    <div className="ltn__form-box contact-form-box box-shadow white-bg">
-                                                        <h4 className="title-2">{subtitle}</h4>
-                                                        <form onSubmit={handleSubmit}>
-                                                            <div className="row">
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-name ltn__custom-icon">
-                                                                        <input type="text" id='nama_alkes' name="nama_alkes" onChange={handleInputChangeForm} placeholder="Masukkan Nama Alkes" />
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-textarea ltn__custom-icon">
-                                                                        <textarea id="deskripsi_alkes" name="deskripsi_alkes" placeholder="Deskripsi Alkes" onChange={handleInputChangeForm}></textarea>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                borderRadius={0}
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <InputLabel>Kategori Alkes</InputLabel>
-                                                                                <Select
-                                                                                    id="kategori_alkes"
-                                                                                    name='kategori_alkes'
-                                                                                    label="kategori_alkes"
-                                                                                    value={selectedCategory}
-                                                                                    onChange={handleCategoryChange}
-                                                                                >
-                                                                                    {
-                                                                                        categories.map((item, index) => (
-                                                                                            <MenuItem key={index} value={item.category}>
-                                                                                                {item.category}
-                                                                                            </MenuItem>
-                                                                                        ))
-                                                                                    }
+            {
+              details?.map((alkes, index) => (
+                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} details={details} user={user} arrayStatus={arrayStatus} web3={web3} index={index} />
+              ))
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-                                                                                </Select>
-                                                                            </FormControl>
-                                                                        </Box>
-
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                borderRadius={0}
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <InputLabel>Sub Kategori Alkes</InputLabel>
-                                                                                <Select
-                                                                                    id="kategori_alkes"
-                                                                                    name='kategori_alkes'
-                                                                                    label="kategori_alkes"
-                                                                                    value={selectedSubcategory}
-                                                                                    onChange={handleSubcategoryChange}
-                                                                                >
-                                                                                    {subcategoriesOptions &&
-                                                                                        subcategoriesOptions.map((subcategory, index) => (
-                                                                                            <MenuItem key={index} value={subcategory}>
-                                                                                                {subcategory}
-                                                                                            </MenuItem>
-                                                                                        ))}
-
-                                                                                </Select>
-                                                                            </FormControl>
-                                                                        </Box>
-
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                borderRadius={0}
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <InputLabel>Jenis Elektromedik</InputLabel>
-                                                                                <Select
-                                                                                    id="klasifikasi"
-                                                                                    name='klasifikasi'
-                                                                                    label="Klasifikasi"
-                                                                                    onChange={handleSelectChangeForm}
-                                                                                >
-                                                                                    <MenuItem value={"elektromedik_radiasi"}>Elektromedik Radiasi</MenuItem>
-                                                                                    <MenuItem value={"elktromedik_non_radiasi"}>Elektromedik Non Radiasi</MenuItem>
-                                                                                    <MenuItem value={"non_elktromedik_steril"}>Non Elektromedik Steril</MenuItem>
-                                                                                    <MenuItem value={"non_elktromedik_non_steril"}>Non Elektromedik Non Steril</MenuItem>
-                                                                                    <MenuItem value={"diagnostic_invitro"}>Diagnostic In Vitro</MenuItem>
-                                                                                </Select>
-                                                                            </FormControl>
-                                                                        </Box>
-
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-name ltn__custom-icon">
-                                                                        <input type="text" id='tipe_alkes' name="tipe_alkes" onChange={handleInputChangeForm} placeholder="Masukkan Tipe Alkes" />
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                borderRadius={0}
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <InputLabel>Kelas</InputLabel>
-                                                                                <Select
-                                                                                    id="kelas"
-                                                                                    name="kelas"
-                                                                                    label="Kelas"
-                                                                                    onChange={handleSelectChangeForm}
-                                                                                >
-                                                                                    <MenuItem value={"Kelas 1"}>Kelas 1</MenuItem>
-                                                                                    <MenuItem value={"Kelas 2"}>Kelas 2</MenuItem>
-                                                                                    <MenuItem value={"Kelas 3"}>Kelas 3</MenuItem>
-                                                                                </Select>
-                                                                            </FormControl>
-                                                                        </Box>
-
-                                                                    </div>
-                                                                </div> */}
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <InputLabel>Kelas Resiko</InputLabel>
-                                                                                <Select
-                                                                                    id="kelas_resiko"
-                                                                                    name="kelas_resiko"
-                                                                                    label="Kelas Resiko"
-                                                                                    onChange={handleSelectChangeForm}
-                                                                                >
-                                                                                    <MenuItem value={"A"}>Kelas A</MenuItem>
-                                                                                    <MenuItem value={"B"}>Kelas B</MenuItem>
-                                                                                    <MenuItem value={"C"}>Kelas C</MenuItem>
-                                                                                    <MenuItem value={"D"}>Kelas D</MenuItem>
-                                                                                </Select>
-                                                                            </FormControl>
-                                                                        </Box>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-md-12">
-                                                                    <div className="input-item input-item-select">
-                                                                        <Box>
-                                                                            <FormControl
-                                                                                fullWidth
-                                                                                sx={{ ...stylesSelect }}
-                                                                            >
-                                                                                <TextField
-                                                                                    id="kuantitas"
-                                                                                    label="Kuantitas"
-                                                                                    type="number"
-                                                                                    value={count}
-                                                                                    onChange={handleCountChange}
-                                                                                    inputProps={{
-                                                                                        min: 1,
-                                                                                        step: 1,
-                                                                                    }}
-
-                                                                                />
+    )
+  }
 
 
-                                                                            </FormControl>
-                                                                            <Button size='small' variant="contained" color='primary' onClick={handleGenerateIds}>
-                                                                                Generate ID
-                                                                            </Button>
-                                                                            <TabelGenerateId generatedIds={generatedIds} />
-                                                                        </Box>
+  const Row = ({ alkes, user, web3, index, arrayStatus }) => {
+
+    console.log(alkes);
+    console.log(arrayStatus);
+    console.log(user);
+    // const { row } = props;
+    const [open, setOpen] = useState(false);
+
+    return (
+      <React.Fragment>
+        <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+          <TableCell>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+
+
+          <TableCell component="th" scope="row">
+            {alkes.returnValues.alkesAddr}
+          </TableCell>
+
+          {user[index].userAddr === alkes.returnValues.manufaktur
+            ?
+
+            <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
+            </TableCell>
+            :
+            <TableCell align='right'>{alkes.returnValues.manufaktur}</TableCell>
+
+          }
+
+        </TableRow>
+        <TableRow>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div">
+                  Details :
+                </Typography>
+                <Table size="small" aria-label="purchases">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Distributor Address</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+
+                    <TableCell>{alkes.returnValues.distributor}</TableCell>
+                    <TableCell>{new Date(alkes.returnValues.timestamp * 1000).toString()}</TableCell>
+                    <TableCell>
+                      {
+                        Number(arrayStatus[index]) < 1
+                          ?
+                          "Delay" :
+                          "Approve"
+                      }
+                    </TableCell>
+                    <TableCell align='center'>
+                      <IconButton onClick={() => handleClickOpen(alkes.returnValues.alkesAddr)}>
+                        <Visibility />
+                      </IconButton>
+                      {
+                        Number(arrayStatus[index]) < 1 &&
+                        <IconButton onClick={() => handleAccept(alkes.returnValues.alkesAddr, alkes.returnValues.distributor)} >
+                          <Check />
+                        </IconButton>
+                      }
+                    </TableCell>
+
+
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+    );
+  }
+
+
+  const DataAlkesComp = () => {
+    return (
+      <ul>
+        {
+          getAllData?.map((alkes, index) => {
+            return (
+              <li key={alkes.address}>
+
+                <div className="top-rated-product-item clearfix">
+                  <div className="top-rated-product-img">
+                    <i className="fas fa-stethoscope"></i>
+
+                  </div>
+                  <div className="top-rated-product-info">
+                    <h2 className='product-title'>
+                      {web3.utils.hexToUtf8(alkes.namAlkes).trim()}
+                      <button type='button' className='btn btn-icon px-1 py-1' onClick={() => handleClickOpenList(alkes.address)}>
+                        <i className='fas fa-external-link-alt'></i>
+                      </button>
 
 
 
 
-                                                                    </div>
-
-                                                                </div>
-
-                                                            </div>
-                                                            {!loadingSubmit
-                                                                ?
-                                                                <Stack sx={{ width: '100%' }} spacing={2}>
-                                                                    <Alert severity="success">Alat Kesehatan Berhasil Ditambah</Alert>
-                                                                </Stack>
-                                                                :
-                                                                null
-
-                                                            }
-
-
-                                                            <div className="btn-wrapper text-end">
-                                                                <button className="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Submit</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-
-                                                    <div className="ltn__form-box contact-form-box box-shadow white-bg">
-
-
-
-                                                    </div>
-                                                </div>
-
-                                                <div className='tab-pane fade' id='liton_tab_3'>
-                                                    <div className="ltn__form-box contact-form-box box-shadow white-bg ltn__top-rated-product-widget">
-                                                        <h4 className="title-2">List Alkes</h4>
-                                                        {
-                                                            loadingSubmit
-                                                                ? <DataAlkesComp />
-                                                                : <Loader />
-                                                        }
-
-                                                    </div>
-                                                </div>
-
-                                                <div className="tab-pane fade" id="liton_tab_4">
-                                                    <DataAlkes />
-
-
-                                                </div>
-
-
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
+                    </h2>
+                    <div className="product-price">
+                      <span>{alkes.address}</span>
+                    </div>
+                    <div className="product-brief">
+                      <h6>{web3.utils.hexToUtf8(alkes.tipeAlkes).trim()}</h6>
 
                     </div>
+
+                  </div>
                 </div>
 
-            </div>
-
-            <ModalDetailAlkes />
-
+              </li>
+            )
 
 
-
-        </>
+          })
+        }
+      </ul>
 
 
 
     )
+
+  }
+
+
+  // fetchData();
+  return (
+    <>
+      <div className="liton__wishlist-area pb-70">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12 mb-50">
+              <div className="ltn__product-tab-area">
+                <div className="container">
+                  <div className="row">
+                    <div className="col-lg-4">
+                      <div className="ltn__tab-menu-list mb-50">
+                        <div className="nav">
+                          <a className="active show" data-bs-toggle="tab" href="#liton_tab_1">Dashboard <i className="fas fa-home"></i></a>
+                          <a data-bs-toggle="tab" href="#liton_tab_2">Tambah Alkes <i className="fas fa-arrow-right"></i></a>
+                          <a data-bs-toggle="tab" href="#liton_tab_3">Alkes <i className="fas fa-stethoscope"></i></a>
+                          <a data-bs-toggle="tab" href="#liton_tab_4">Response <i className="fas fa-arrow-left"></i></a>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-8">
+                      <div className="tab-content">
+                        <div className="tab-pane fade active show" id="liton_tab_1">
+                          <div className="ltn__myaccount-tab-content-inner">
+                            <p>Blockchain Address : <strong>{account}</strong>
+
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className='tab-pane fade' id='liton_tab_2'>
+                          <div className="ltn__form-box contact-form-box box-shadow white-bg">
+                            <h4 className="title-2">{subtitle}</h4>
+                            <form onSubmit={handleSubmit}>
+                              <div className="row">
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-name ltn__custom-icon">
+                                    <input type="text" id='nama_alkes' name="nama_alkes" onChange={handleInputChangeForm} placeholder="Masukkan Nama Alkes" />
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-textarea ltn__custom-icon">
+                                    <textarea id="deskripsi_alkes" name="deskripsi_alkes" placeholder="Deskripsi Alkes" onChange={handleInputChangeForm}></textarea>
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-select">
+                                    <Box>
+                                      <FormControl
+                                        borderRadius={0}
+                                        fullWidth
+                                        sx={{ ...stylesSelect }}
+                                      >
+                                        <InputLabel>Kategori Alkes</InputLabel>
+                                        <Select
+                                          id="kategori_alkes"
+                                          name='kategori_alkes'
+                                          label="kategori_alkes"
+                                          value={selectedCategory}
+                                          onChange={handleCategoryChange}
+                                        >
+                                          {
+                                            categories.map((item, index) => (
+                                              <MenuItem key={index} value={item.category}>
+                                                {item.category}
+                                              </MenuItem>
+                                            ))
+                                          }
+
+                                        </Select>
+                                      </FormControl>
+                                    </Box>
+
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-select">
+                                    <Box>
+                                      <FormControl
+                                        borderRadius={0}
+                                        fullWidth
+                                        sx={{ ...stylesSelect }}
+                                      >
+                                        <InputLabel>Sub Kategori Alkes</InputLabel>
+                                        <Select
+                                          id="kategori_alkes"
+                                          name='kategori_alkes'
+                                          label="kategori_alkes"
+                                          value={selectedSubcategory}
+                                          onChange={handleSubcategoryChange}
+                                        >
+                                          {subcategoriesOptions &&
+                                            subcategoriesOptions.map((subcategory, index) => (
+                                              <MenuItem key={index} value={subcategory}>
+                                                {subcategory}
+                                              </MenuItem>
+                                            ))}
+
+                                        </Select>
+                                      </FormControl>
+                                    </Box>
+
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-select">
+                                    <Box>
+                                      <FormControl
+                                        borderRadius={0}
+                                        fullWidth
+                                        sx={{ ...stylesSelect }}
+                                      >
+                                        <InputLabel>Jenis Elektromedik</InputLabel>
+                                        <Select
+                                          id="klasifikasi"
+                                          name='klasifikasi'
+                                          label="Klasifikasi"
+                                          onChange={handleSelectChangeForm}
+                                        >
+                                          <MenuItem value={"elektromedik_radiasi"}>Elektromedik Radiasi</MenuItem>
+                                          <MenuItem value={"elktromedik_non_radiasi"}>Elektromedik Non Radiasi</MenuItem>
+                                          <MenuItem value={"non_elktromedik_steril"}>Non Elektromedik Steril</MenuItem>
+                                          <MenuItem value={"non_elktromedik_non_steril"}>Non Elektromedik Non Steril</MenuItem>
+                                          <MenuItem value={"diagnostic_invitro"}>Diagnostic In Vitro</MenuItem>
+                                        </Select>
+                                      </FormControl>
+                                    </Box>
+
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-name ltn__custom-icon">
+                                    <input type="text" id='tipe_alkes' name="tipe_alkes" onChange={handleInputChangeForm} placeholder="Masukkan Tipe Alkes" />
+                                  </div>
+                                </div>
+
+                                {/* <div className="col-md-12">
+                                                                        <div className="input-item input-item-select">
+                                                                            <Box>
+                                                                                <FormControl
+                                                                                    borderRadius={0}
+                                                                                    fullWidth
+                                                                                    sx={{ ...stylesSelect }}
+                                                                                >
+                                                                                    <InputLabel>Kelas</InputLabel>
+                                                                                    <Select
+                                                                                        id="kelas"
+                                                                                        name="kelas"
+                                                                                        label="Kelas"
+                                                                                        onChange={handleSelectChangeForm}
+                                                                                    >
+                                                                                        <MenuItem value={"Kelas 1"}>Kelas 1</MenuItem>
+                                                                                        <MenuItem value={"Kelas 2"}>Kelas 2</MenuItem>
+                                                                                        <MenuItem value={"Kelas 3"}>Kelas 3</MenuItem>
+                                                                                    </Select>
+                                                                                </FormControl>
+                                                                            </Box>
+
+                                                                        </div>
+                                                                    </div> */}
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-select">
+                                    <Box>
+                                      <FormControl
+                                        fullWidth
+                                        sx={{ ...stylesSelect }}
+                                      >
+                                        <InputLabel>Kelas Resiko</InputLabel>
+                                        <Select
+                                          id="kelas_resiko"
+                                          name="kelas_resiko"
+                                          label="Kelas Resiko"
+                                          onChange={handleSelectChangeForm}
+                                        >
+                                          <MenuItem value={"A"}>Kelas A</MenuItem>
+                                          <MenuItem value={"B"}>Kelas B</MenuItem>
+                                          <MenuItem value={"C"}>Kelas C</MenuItem>
+                                          <MenuItem value={"D"}>Kelas D</MenuItem>
+                                        </Select>
+                                      </FormControl>
+                                    </Box>
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="input-item input-item-select">
+                                    <Box>
+                                      <FormControl
+                                        fullWidth
+                                        sx={{ ...stylesSelect }}
+                                      >
+                                        <TextField
+                                          id="kuantitas"
+                                          label="Kuantitas"
+                                          type="number"
+                                          value={count}
+                                          onChange={handleCountChange}
+                                          inputProps={{
+                                            min: 1,
+                                            step: 1,
+                                          }}
+
+                                        />
+
+
+                                      </FormControl>
+                                      <Button size='small' variant="contained" color='primary' onClick={handleGenerateIds}>
+                                        Generate ID
+                                      </Button>
+                                      <TabelGenerateId generatedIds={generatedIds} />
+                                    </Box>
+
+
+
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+                              {!loadingSubmit
+                                ?
+                                <Stack sx={{ width: '100%' }} spacing={2}>
+                                  <Alert severity="success">Alat Kesehatan Berhasil Ditambah</Alert>
+                                </Stack>
+                                :
+                                null
+
+                              }
+
+
+                              <div className="btn-wrapper text-end">
+                                <button className="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Submit</button>
+                              </div>
+                            </form>
+                          </div>
+
+                          <div className="ltn__form-box contact-form-box box-shadow white-bg">
+
+
+
+                          </div>
+                        </div>
+
+                        <div className='tab-pane fade' id='liton_tab_3'>
+                          <div className="ltn__form-box contact-form-box box-shadow white-bg ltn__top-rated-product-widget">
+                            <h4 className="title-2">List Alkes</h4>
+                            {
+                              loadingSubmit
+                                ? <DataAlkesComp />
+                                : <Loader />
+                            }
+
+                          </div>
+                        </div>
+
+                        <div className="tab-pane fade" id="liton_tab_4">
+                          <DataAlkes />
+
+
+                        </div>
+
+
+
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      {
+        open
+          ?
+          <ModalDetailAlkes
+            setOpen={setOpen}
+            open={open}
+            addressResponse={addressResponse}
+            // status={status}
+            RawAlkes={RawAlkes}
+            web3={web3}
+            account={account}
+          />
+          : null
+
+      }
+
+    </>
+
+
+
+  )
 }
 
 export default TambahAlkes
