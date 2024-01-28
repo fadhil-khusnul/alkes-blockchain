@@ -1,15 +1,15 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grow, LinearProgress, Paper, Step, StepLabel, Stepper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import TabelModal from '../manufaktur/TabelModal';
 import Draggable from 'react-draggable';
 // import RawAlkes from '../../build/RawAlkes.json';
 import axios from 'axios';
+import TabelPasien from './TabelPasien';
 
 
 
 
 
-const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setOpen }) => {
+const ModalPasien = ({ account, web3, RawAlkes, addressResponse, txn, txnTime, open, setOpen }) => {
 
   console.log(addressResponse);
   const [alkesProducts, setAlkesProducts] = useState([]);
@@ -47,17 +47,9 @@ const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setO
 
         console.log(fetchedData);
 
-        // const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
-        // const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
-        // const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
-        // const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
-        // const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
-        // const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
-
-
-
-        const response = await axios.post('/api/getAlkesProduct', {
+        const response = await axios.post('/api/getAlkesProduct/txn', {
           addressResponse: addressResponse,
+          txn: txn,
         });
 
         console.log(response);
@@ -69,12 +61,6 @@ const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setO
         }
 
 
-        // setNamaAlkesFetch(nama)
-        // setklasifikasiAlkes(klasifikasi)
-        // settipeAlkes(tipe)
-        // setkelasAlkes(kelas)
-        // setkelasResiko(kelas_resiko)
-        // setIzinEdar(izin_edar)
         setData(fetchedData)
         setStatus(fetchedStatus);
       } catch (error) {
@@ -169,13 +155,13 @@ const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setO
                       </tr>
                       <tr>
                         <td>
-                          <strong>Tgl. Produksi</strong>
+                          <strong>Tgl. Transaksi</strong>
                         </td>
                         <td>
                           :
                         </td>
                         <td>
-                          {new Date(data[8] * 1000).toString()}
+                          {new Date(txnTime * 1000).toString()}
                         </td>
                       </tr>
                       <tr>
@@ -373,7 +359,7 @@ const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setO
                     </tbody>
                   </table>
 
-                  <TabelModal alkesProducts={alkesProducts} status={status} />
+                  <TabelPasien alkesProducts={alkesProducts} statusBlockchain={status} />
                 </div>
               </div>
 
@@ -410,4 +396,4 @@ const ModalDetailAlkes = ({ account, web3, RawAlkes, addressResponse, open, setO
   )
 }
 
-export default ModalDetailAlkes;
+export default ModalPasien;

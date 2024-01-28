@@ -43,6 +43,8 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ModalDetailAlkes from '../Data/ModalDetailAlkes';
+import ModalPasien from './ModalPasien';
+import axios from 'axios';
 
 
 
@@ -66,8 +68,11 @@ const Pasien = () => {
   const [details, setDetails] = useState([]);
   const [user, setUser] = useState([]);
   const [arrayStatus, setArrayStatus] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [arrayAlkes, setArrayAlkes] = useState([]);
   const [addressResponse, setAddressResponse] = useState("");
+  const [txn, setTxnAddress] = useState("");
+  const [txnTime, setTxnTime] = useState("");
   const [data, setData] = useState("");
   const [open, setOpen] = useState("");
 
@@ -110,18 +115,38 @@ const Pasien = () => {
       await supplyChain.methods.reqAlkesPasien(account, addressFaskes, addressAlkes).send({ from: account })
         .once('receipt', async (receipt) => {
 
+          // const rawAlkes = new web3.eth.Contract(RawAlkes.abi, addressAlkes);
+          // const data = await rawAlkes.methods.getRawAlkes().call({ from: account });
+
+
+          // const getId = new web3.eth.Contract(DataGeneratedId.abi, rawAlkesAddress);
+          // const dataId = await getId.methods.getId().call({ from: account });
+
+          // console.log(dataId);
+
+          console.log(receipt);
+          console.log(receipt.events.PasienEvent.returnValues.timestamp);
+
+
+          const txnAddress = receipt.transactionHash;
+          var txnTime = parseInt(receipt.events.PasienEvent.returnValues.timestamp);
+          console.log(txnAddress, txnTime);
+
+
+
           const products = {
             addressAlkes,
             account,
-            count
+            count,
+            txnAddress,
+            txnTime
           }
           const response = await fetch(`/api/generatedID/addressAlkes`, {
             method: "POST",
             body: JSON.stringify(products)
           })
           alert('Request Alkes ke Faskes!');
-          console.log(receipt);
-          // setLoading(true);
+          setLoading(true);
 
           window.location.reload();
         })
@@ -190,14 +215,31 @@ const Pasien = () => {
           })
         )
 
+        const transactions = await Promise.all(
+          responseAlkes.map(async (alkes) => {
+
+            const data = await axios.post('/api/transaksi', {
+              addressResponse: alkes.returnValues.alkesAddr,
+              txn: alkes.transactionHash,
+            });
+
+            console.log(data);
+            
+            return data.data.products
+          })
+        )
+
+        console.log(transactions);
+
         console.log(infoAlkes);
-        console.log(listUser);
+        console.log(infoStatus);
 
 
         setUser(listUser)
 
         setArrayAlkes(infoAlkes)
         setArrayStatus(infoStatus)
+        setTransactions(transactions)
 
         setDetails(responseAlkes);
 
@@ -210,62 +252,16 @@ const Pasien = () => {
     fetchData();
   }, [account, web3, supplyChain])
 
-  // useEffect(() => {
-  //   const fetchDataDetails = async () => {
-  //     try {
-  //       const rawMaterial = new web3.eth.Contract(RawAlkes.abi, addressResponse);
-  //       const fetchedData = await rawMaterial.methods.getRawAlkes().call({ from: account });
-  //       const fetchedStatus = await rawMaterial.methods.getRawAlkesStatus().call();
-  //       console.log(fetchedData);
 
-  //       const nama = web3.utils.hexToUtf8(fetchedData[1][0]).trim();
-  //       const klasifikasi = web3.utils.hexToUtf8(fetchedData[1][2]).trim();
-  //       const tipe = web3.utils.hexToUtf8(fetchedData[1][3]).trim();
-  //       const kelas = web3.utils.hexToUtf8(fetchedData[1][4]).trim();
-  //       const kelas_resiko = web3.utils.hexToUtf8(fetchedData[1][5]).trim();
-  //       const izin_edar = web3.utils.hexToUtf8(fetchedData[1][6]).trim();
-
-
-
-  //       setNamaAlkesFetch(nama)
-  //       setklasifikasiAlkes(klasifikasi)
-  //       settipeAlkes(tipe)
-  //       setkelasAlkes(kelas)
-  //       setkelasResiko(kelas_resiko)
-  //       setIzinEdar(izin_edar)
-  //       setData(fetchedData)
-  //       setStatus(fetchedStatus);
-  //     } catch (error) {
-  //       console.error("Error", error);
-  //     }
-  //   };
-
-  //   fetchDataDetails();
-
-  // }, [addressResponse, account]);
-
-  const PaperComponent = (props) => {
-    return (
-      <Draggable
-        handle="#draggable-dialog-title"
-        cancel={'[class*="MuiDialogContent-root"]'}
-      >
-        <Paper {...props} />
-      </Draggable>
-    );
-  }
-
-  //MODAL DETAILL
-
-  const handleClickOpen = (address) => {
-    console.log(address);
+  const handleClickOpen = (address, tx, time) => {
+    console.log(address, tx, time);
     setAddressResponse(address);
+    setTxnAddress(tx);
+    setTxnTime(time);
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+ 
 
 
   //TABLE-ALKES
@@ -287,7 +283,7 @@ const Pasien = () => {
 
             {
               details?.map((alkes, index) => (
-                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} user={user} arrayStatus={arrayStatus} arrayAlkes={arrayAlkes} web3={web3} index={index} />
+                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} user={user} arrayStatus={arrayStatus} transactions={transactions} arrayAlkes={arrayAlkes} web3={web3} index={index} />
               ))
             }
           </TableBody>
@@ -298,10 +294,10 @@ const Pasien = () => {
   }
 
 
-  const Row = ({ alkes, user, web3, index, arrayStatus, arrayAlkes }) => {
+  const Row = ({ alkes, user, web3, index, arrayStatus, arrayAlkes, transactions }) => {
 
     console.log(alkes);
-    console.log(Number(arrayStatus[0]));
+    console.log(transactions[0][0]);
     console.log(arrayAlkes);
     console.log(user);
     // const { row } = props;
@@ -347,7 +343,7 @@ const Pasien = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>Pasien Address</TableCell>
-                      <TableCell>Status</TableCell>
+                      {/* <TableCell>Status</TableCell> */}
                       <TableCell>Date</TableCell>
                       <TableCell />
                     </TableRow>
@@ -366,18 +362,23 @@ const Pasien = () => {
 
                     <TableCell>
                       {
-                        arrayStatus[index] <= 2
+                        arrayStatus[index] > 3 && transactions[index][0].status
                           ?
-                          "Delay" :
-                          "Approve"
+                          "Approve" :
+                          "Delay"
                       }
                     </TableCell>
                     <TableCell>{new Date(alkes.returnValues.timestamp * 1000).toString()}</TableCell>
 
                     <TableCell>
-                      <IconButton onClick={() => handleClickOpen(alkes.returnValues.alkesAddr)} aria-label="Open">
-                        <Visibility />
-                      </IconButton>
+                      {
+                        arrayStatus[index] > 3 && transactions[index][0].status ?
+                          <IconButton onClick={() => handleClickOpen(alkes.returnValues.alkesAddr, alkes.transactionHash, alkes.returnValues.timestamp)} aria-label="Open">
+                            <Visibility />
+                          </IconButton>
+                          :
+                          ''
+                      }
 
 
                     </TableCell>
@@ -457,7 +458,7 @@ const Pasien = () => {
 
                         <div className="tab-pane fade" id="liton_tab_2">
                           <div className="ltn__myaccount-tab-content-inner">
-                            <p>Silahkan Melakukan Request Alkes Sebagai <strong>Rumah Sakit</strong> ke <strong>Distributor</strong>  </p>
+                            <p>Silahkan Melakukan Request Alkes Sebagai <strong>Pasien</strong> ke <strong>Faskes</strong>  </p>
                             <div className="ltn__form-box">
                               <form onSubmit={handleSubmit}>
 
@@ -533,10 +534,12 @@ const Pasien = () => {
       {
         open
           ?
-          <ModalDetailAlkes
+          <ModalPasien
             setOpen={setOpen}
             open={open}
             addressResponse={addressResponse}
+            txn={txn}
+            txnTime={txnTime}
             // status={status}
             RawAlkes={RawAlkes}
             web3={web3}

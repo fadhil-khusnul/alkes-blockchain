@@ -40,9 +40,10 @@ model GeneratedIds {
 
 model AlkesProduct {
   id          Int      @id @default(autoincrement())
-  alkesAddr   String
-  generatedId String
-  pasienAddr  String?
+  alkesAddr   String @db.VarChar(255)
+  generatedId String @db.VarChar(255)
+  pasienAddr  String? @db.VarChar(255)
+  txnAddressPasien  String? @db.VarChar(255)
   status      Boolean  @default(false)
   createdAt   DateTime?
   updatedAt   DateTime?

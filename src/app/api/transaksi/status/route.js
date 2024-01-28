@@ -3,30 +3,26 @@ import prisma from "@/utils/prisma"
 export async function POST(request) {
   try {
 
-    const { addressAlkes, account, count, txnAddress, txnTime } = await request.json();
+    const { txn } = await request.json();
 
-    console.log(addressAlkes, count, txnAddress, txnTime);
+    console.log(txn);
 
     const alkesToUpdate = await prisma.alkesProduct.findMany({
       where: {
-        alkesAddr: addressAlkes,
-        pasienAddr: null,
-        txnAddressPasien: null,
-        updatedAt: null,
+        txnAddressPasien: txn,
       },
     });
 
+    console.log(alkesToUpdate);
 
 
-    for (let i = 0; i < count; i++) {
+
+    for (let i = 0; i < alkesToUpdate.length; i++) {
       const alkes = alkesToUpdate[i];
       await prisma.alkesProduct.update({
         where: { id: alkes.id },
-        data: { 
-          pasienAddr: account, 
-          txnAddressPasien : txnAddress,
-          // status: true,
-          updatedAt : new Date(txnTime * 1000) 
+        data: {
+          status: true,
         }, // Replace "your_updated_value" with the actual value you want to set
       });
 
@@ -35,10 +31,10 @@ export async function POST(request) {
     return Response.json({
       status: 200,
       message: "Rows updated successfully.",
-      alkesToUpdate :alkesToUpdate
+      alkesToUpdate: alkesToUpdate
     })
 
-   
+
   } catch (error) {
     console.error("Error updating rows:", error);
     return {

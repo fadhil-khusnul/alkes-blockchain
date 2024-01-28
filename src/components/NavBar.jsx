@@ -15,7 +15,10 @@ const NavBar = () => {
                     <li className="menu"><a href="/kemenkes">Kemenkes</a>
                         
                     </li>
-                    <li className="menu"><a href="/rumah-sakit">Rumah Sakit</a>
+                    <li className="menu"><a href="/faskes">Faskes</a>
+                        
+                    </li>
+                    <li className="menu"><a href="/pasien">Pasien</a>
                         
                     </li>
 

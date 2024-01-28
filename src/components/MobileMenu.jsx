@@ -36,7 +36,11 @@ export default function MobileMenu({ title }) {
 
                         </li>
                         <li>
-                            <a href="/rumah-sakit">Rumah Sakit</a>
+                            <a href="/faskes">Faskes</a>
+
+                        </li>
+                        <li>
+                            <a href="/pasien">Pasien</a>
 
                         </li>
 

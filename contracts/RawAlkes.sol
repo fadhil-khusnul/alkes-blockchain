@@ -11,7 +11,8 @@ contract RawAlkes {
         AtManufacturer,
         AtDistributor,
         AtKemenkes,
-        AtRumahSakit
+        AtFaskes,
+        AtPasien
     }
 
     struct AlkesDetails {
@@ -151,6 +152,11 @@ contract RawAlkes {
     function distributorToRs(address addr) public {
         require(addr != address(0), "Invalid address");
         rumahSakit = addr;
-        status = PackageStatus.AtRumahSakit;
+        status = PackageStatus.AtFaskes;
+    }
+    function faskesToPasien(address addr) public {
+        require(addr != address(0), "Invalid address");
+        pasien = addr;
+        status = PackageStatus.AtPasien;
     }
 }

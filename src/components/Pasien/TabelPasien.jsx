@@ -12,15 +12,15 @@ const columns = [
   { id: 'no', label: 'No', minWidth: 10 },
   { id: 'generatedId', label: 'ID Alat', minWidth: 150 },
   { id: 'pasienAddr', label: 'Pasien' },
-  { id: 'tgl_Transaksi', label: 'Tgl Transaksi' },
   { id: 'status', label: 'Status' },
 ];
 
-const TabelModal = ({ alkesProducts, status }) => {
+const TabelPasien = ({ alkesProducts, statusBlockchain }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(3);
 
-  console.log(status);
+  console.log(statusBlockchain);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -56,9 +56,8 @@ const TabelModal = ({ alkesProducts, status }) => {
                   <TableRow hover role="checkbox" tabIndex={-1} key={product.generatedId}>
                     <TableCell>{no}</TableCell>
                     <TableCell>{web3.utils.hexToUtf8(product.generatedId).trim()}</TableCell>
-                    <TableCell>{product.pasienAddr ? product.pasienAddr : '-'}</TableCell>
-                    <TableCell>{product.updatedAt ? new Date(product.updatedAt).toString() : '-'}</TableCell>
-                    <TableCell>{status > 3 && product.status ? 'Success' : 'Progress'}</TableCell>
+                    <TableCell>{product.pasienAddr}</TableCell>
+                    <TableCell>{statusBlockchain > 3 && product.status ? 'Success' : 'Progress'}</TableCell>
                   </TableRow>
                 );
               })}
@@ -78,4 +77,4 @@ const TabelModal = ({ alkesProducts, status }) => {
   );
 };
 
-export default TabelModal;
+export default TabelPasien;
