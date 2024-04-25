@@ -104,7 +104,23 @@ const FormRegis = () => {
 
             console.log("infooo", info);
 
-            setViewRole(info.role);
+            if (info.role == 1) {
+                setViewRole("Manufaktur")
+                
+            } 
+            else if(info.role == 2) {
+                setViewRole('Distributor')
+            }
+            else if(info.role == 3) {
+                setViewRole('Kemenkes')
+            }
+            else if(info.role == 4) {
+                setViewRole("Faskes")
+            }
+            else if(info.role == 5) {
+                setViewRole('Pasien')
+            }
+
 
             console.log(info.role, info.email);
 
@@ -136,10 +152,10 @@ const FormRegis = () => {
                     <div className="col-lg-12">
                         <div className="ltn__team-details-member-about">
                             <ul>
-                                <li><strong>Blockchain : </strong> {viewAddress}</li>
+                                <li><strong>Blockchain :</strong> {viewAddress}</li>
                                 <li><strong>Nama User : </strong> {viewName}</li>
-                                <li><strong>Email : </strong> {viewEmail}</li>
-                                <li><strong>No Telp : </strong> {viewNoTelp}</li>
+                                <li><strong>Email :</strong> {viewEmail}</li>
+                                <li><strong>No Telp :</strong> {viewNoTelp}</li>
                                 <li><strong>Role User : </strong> {viewRole}</li>
                             </ul>
                         </div>
@@ -231,7 +247,8 @@ const FormRegis = () => {
                                                             <MenuItem value={1}>Manufaktur</MenuItem>
                                                             <MenuItem value={2}>Distributor</MenuItem>
                                                             <MenuItem value={3}>Kemenkes</MenuItem>
-                                                            <MenuItem value={4}>Rumah Sakit</MenuItem>
+                                                            <MenuItem value={4}>Faskes</MenuItem>
+                                                            <MenuItem value={5}>Pasien</MenuItem>
                                                         </Select>
                                                     </FormControl>
                                                 </Box>
@@ -269,7 +286,7 @@ const FormRegis = () => {
                                     <div className="row">
                                         <div className="col-md-12">
                                             <div className="input-item input-item-subject ltn__custom-icon">
-                                                <input type="text" id='address_view' name="address_view" onChange={handleInputView} placeholder="Masukkan Blockchai Address User" />
+                                                <input type="text" id='address_view' name="address_view" onChange={handleInputView} placeholder="Masukkan Blockchain Address User" />
                                             </div>
                                         </div>
                                     </div>

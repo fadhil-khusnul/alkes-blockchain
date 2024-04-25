@@ -343,7 +343,7 @@ const Pasien = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>Pasien Address</TableCell>
-                      {/* <TableCell>Status</TableCell> */}
+                      <TableCell>Status</TableCell>
                       <TableCell>Date</TableCell>
                       <TableCell />
                     </TableRow>

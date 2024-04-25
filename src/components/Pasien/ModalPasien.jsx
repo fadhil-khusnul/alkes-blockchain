@@ -250,7 +250,8 @@ const ModalPasien = ({ account, web3, RawAlkes, addressResponse, txn, txnTime, o
                           :
                         </td>
                         <td>
-                          {data[1]?.kuantitas ? web3.utils.hexToUtf8(data[1]?.kuantitas).trim() : ""}
+                          {alkesProducts.length}
+                          {/* {data[1]?.kuantitas ? web3.utils.hexToUtf8(data[1]?.kuantitas).trim() : ""} */}
 
                         </td>
 

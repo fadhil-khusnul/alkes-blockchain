@@ -22,8 +22,8 @@ contract SupplyChain {
         Manufaktur,
         Distributor,
         Kemenkes,
-        RumahSakit,
-        Customer
+        Faskes,
+        Pasien
     }
 
     struct UserData {

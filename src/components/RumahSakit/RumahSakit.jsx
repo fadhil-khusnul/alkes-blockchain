@@ -68,7 +68,8 @@ const RumahSakit = ({ subtitle }) => {
   const [details, setDetails] = useState([]);
   const [detailsResponse, setDetailsResponse] = useState([]);
 
-  const [user, setUser] = useState([]);
+  const [userReceive, setUserReceive] = useState([]);
+  const [userBuyer, setUserBuyer] = useState([]);
   const [userResponse, setUserResponse] = useState([]);
 
   const [arrayStatus, setArrayStatus] = useState([]);
@@ -175,9 +176,16 @@ const RumahSakit = ({ subtitle }) => {
         const responseAlkes = await dataResponse()
         const pasien_rs = await responsePasien();
 
-        const listUser = await Promise.all(
+        const userBuyer = await Promise.all(
           responseAlkes.map(async (user) => {
             const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.rs).call()
+            console.log(dataUser);
+            return dataUser
+          })
+        )
+        const userReceive = await Promise.all(
+          responseAlkes.map(async (user) => {
+            const dataUser = await supplyChain.methods.getUserInfo(user.returnValues.distributor).call()
             console.log(dataUser);
             return dataUser
           })
@@ -236,10 +244,10 @@ const RumahSakit = ({ subtitle }) => {
         )
 
         console.log(infoAlkes);
-        console.log(listUser);
 
 
-        setUser(listUser)
+        setUserBuyer(userBuyer)
+        setUserReceive(userReceive)
 
         setArrayAlkes(infoAlkes)
         setArrayStatus(infoStatus)
@@ -324,7 +332,7 @@ const RumahSakit = ({ subtitle }) => {
             <TableRow>
               <TableCell />
               <TableCell><strong>  Address Alkes (Blockchain) </strong></TableCell>
-              <TableCell align="right"><strong>Distributor</strong></TableCell>
+              <TableCell align="right"><strong>Nama Distributor</strong></TableCell>
 
             </TableRow>
           </TableHead>
@@ -332,7 +340,7 @@ const RumahSakit = ({ subtitle }) => {
 
             {
               details?.map((alkes, index) => (
-                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} user={user} arrayStatus={arrayStatus} arrayAlkes={arrayAlkes} web3={web3} index={index} />
+                <Row key={alkes.returnValues.alkesAddr} alkes={alkes} userBuyer={userBuyer} userReceive={userReceive} arrayStatus={arrayStatus} arrayAlkes={arrayAlkes} web3={web3} index={index} />
               ))
             }
           </TableBody>
@@ -343,12 +351,12 @@ const RumahSakit = ({ subtitle }) => {
   }
 
 
-  const Row = ({ alkes, user, web3, index, arrayStatus, arrayAlkes }) => {
+  const Row = ({ alkes, userBuyer, userReceive, web3, index, arrayStatus, arrayAlkes }) => {
 
     console.log(alkes);
     console.log(Number(arrayStatus[0]));
     console.log(arrayAlkes);
-    console.log(user);
+    console.log(userBuyer, userReceive);
     // const { row } = props;
     const [open, setOpen] = useState(false);
 
@@ -370,10 +378,10 @@ const RumahSakit = ({ subtitle }) => {
             {alkes.returnValues.alkesAddr}
           </TableCell>
 
-          {user[index].userAddr === alkes.returnValues.distributor
+          {userReceive[index].userAddr === alkes.returnValues.distributor
             ?
 
-            <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
+            <TableCell align='right'>{web3.utils.hexToUtf8(userReceive[index].name).trim()}
             </TableCell>
             :
             <TableCell align='right'>{alkes.returnValues.distributor}</TableCell>
@@ -391,7 +399,7 @@ const RumahSakit = ({ subtitle }) => {
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Faskes Address</TableCell>
+                      <TableCell>Nama Faskes</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Date</TableCell>
                       <TableCell />
@@ -399,10 +407,10 @@ const RumahSakit = ({ subtitle }) => {
                   </TableHead>
                   <TableBody>
 
-                    {user[index].userAddr === alkes.returnValues.rs
+                    {userBuyer[index].userAddr === alkes.returnValues.rs
                       ?
 
-                      <TableCell>{web3.utils.hexToUtf8(user[index].name).trim()}
+                      <TableCell>{web3.utils.hexToUtf8(userBuyer[index].name).trim()}
                       </TableCell>
                       :
                       <TableCell>{alkes.returnValues.rs}</TableCell>

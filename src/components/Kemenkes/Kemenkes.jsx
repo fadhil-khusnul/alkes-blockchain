@@ -332,7 +332,7 @@ const Kemenkes = ({ subtitle }) => {
     console.log(alkes);
     console.log(Number(arrayStatus[0]));
     console.log(arrayAlkes);
-    console.log(user);
+    console.log(user[index].name);
     // const { row } = props;
     const [open, setOpen] = useState(false);
 
@@ -357,7 +357,8 @@ const Kemenkes = ({ subtitle }) => {
           {user[index].userAddr === alkes.returnValues.distributor
             ?
 
-            <TableCell align='right'>{web3.utils.hexToUtf8(user[index].name).trim()}
+            <TableCell align='right'>
+              {web3.utils.hexToUtf8(user[index].name).trim() }
             </TableCell>
             :
             <TableCell align='right'>{alkes.returnValues.distributor}</TableCell>
